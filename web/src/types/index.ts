@@ -7,6 +7,19 @@ export type Citation = {
 
 export type HealthResponse = {
   status: string;
+  version: string;
+};
+
+export type CapabilityResponse = {
+  max_query_kbs: number;
+  max_upload_target_kbs: number;
+  multi_kb_query_status: string;
+  multi_kb_upload_status: string;
+  kb_creation_enabled: boolean;
+  path_upload_enabled: boolean;
+  math_rendering_status: string;
+  citation_grounding_status: string;
+  notes: string[];
 };
 
 export type KnowledgeBase = {
@@ -30,6 +43,11 @@ export type UploadDocumentPayload = {
   page?: number | null;
   start_page?: number | null;
   end_page?: number | null;
+};
+
+export type CreateKnowledgeBasePayload = {
+  name: string;
+  description?: string | null;
 };
 
 export type QueryPayload = {

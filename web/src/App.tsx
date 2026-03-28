@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 
 import {
+  createKnowledgeBase,
+  getCapabilities,
   getDocumentsForKnowledgeBase,
   getHealth,
   getKnowledgeBases,
@@ -11,11 +13,21 @@ import { DashboardPage } from "./pages/DashboardPage";
 import { KnowledgeBasesPage } from "./pages/KnowledgeBasesPage";
 import { QueryPage } from "./pages/QueryPage";
 import { UploadPage } from "./pages/UploadPage";
-import type { DocumentRecord, KnowledgeBase, QueryPayload, QueryResponse, UploadDocumentPayload } from "./types";
+import type {
+  CapabilityResponse,
+  CreateKnowledgeBasePayload,
+  DocumentRecord,
+  HealthResponse,
+  KnowledgeBase,
+  QueryPayload,
+  QueryResponse,
+  UploadDocumentPayload,
+} from "./types";
 
 
 export function App() {
-  const [healthStatus, setHealthStatus] = useState("loading");
+  const [health, setHealth] = useState<HealthResponse | null>(null);
+  const [capabilities, setCapabilities] = useState<CapabilityResponse | null>(null);
   const [knowledgeBases, setKnowledgeBases] = useState<KnowledgeBase[]>([]);
   const [selectedKnowledgeBase, setSelectedKnowledgeBase] = useState<string | null>(null);
   const [documents, setDocuments] = useState<DocumentRecord[]>([]);
@@ -27,13 +39,14 @@ export function App() {
   useEffect(() => {
     async function load() {
       try {
-        const [health, kbs] = await Promise.all([getHealth(), getKnowledgeBases()]);
-        setHealthStatus(health.status ?? "unknown");
+        const [healthResponse, capabilityResponse, kbs] = await Promise.all([getHealth(), getCapabilities(), getKnowledgeBases()]);
+        setHealth(healthResponse);
+        setCapabilities(capabilityResponse);
         setKnowledgeBases(kbs);
         setSelectedKnowledgeBase((currentSelection) => currentSelection ?? kbs[0]?.name ?? null);
       } catch (error) {
         setErrorMessage(error instanceof Error ? error.message : "Unknown error");
-        setHealthStatus("error");
+        setHealth({ status: "error", version: "unknown" });
       }
     }
 
@@ -105,6 +118,14 @@ export function App() {
     }
   }
 
+  async function handleCreateKnowledgeBase(payload: CreateKnowledgeBasePayload) {
+    setErrorMessage(null);
+    const created = await createKnowledgeBase(payload);
+    await refreshKnowledgeBases();
+    setSelectedKnowledgeBase(created.name);
+    setDocuments([]);
+  }
+
   return (
     <main
       style={{
@@ -127,19 +148,20 @@ export function App() {
       {errorMessage ? <p>Load error: {errorMessage}</p> : null}
 
       <div style={{ display: "grid", gap: "1rem" }}>
-        <DashboardPage status={healthStatus} knowledgeBaseCount={knowledgeBases.length} />
-
+        <DashboardPage capabilities={capabilities} health={health} knowledgeBaseCount={knowledgeBases.length} />
         <KnowledgeBasesPage
+          capabilities={capabilities}
           documents={documents}
           isLoadingDocuments={documentsLoading}
           knowledgeBases={knowledgeBases}
+          onCreateKnowledgeBase={handleCreateKnowledgeBase}
           onSelectKnowledgeBase={setSelectedKnowledgeBase}
           selectedKnowledgeBase={selectedKnowledgeBase}
         />
 
         <div style={{ display: "grid", gap: "1rem", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)" }}>
-          <UploadPage isUploading={isUploading} onUpload={handleUpload} selectedKnowledgeBase={selectedKnowledgeBase} />
-          <QueryPage isQuerying={isQuerying} onQuery={handleQuery} selectedKnowledgeBase={selectedKnowledgeBase} />
+          <UploadPage capabilities={capabilities} isUploading={isUploading} onUpload={handleUpload} selectedKnowledgeBase={selectedKnowledgeBase} />
+          <QueryPage capabilities={capabilities} isQuerying={isQuerying} onQuery={handleQuery} selectedKnowledgeBase={selectedKnowledgeBase} />
         </div>
       </div>
     </main>

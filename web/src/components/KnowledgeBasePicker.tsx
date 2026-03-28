@@ -30,6 +30,11 @@ export function KnowledgeBasePicker(props: KnowledgeBasePickerProps) {
             type="button"
           >
             <div style={{ fontSize: "1rem", fontWeight: 700 }}>{knowledgeBase.name}</div>
+            {knowledgeBase.description ? (
+              <div style={{ fontSize: "0.88rem", marginTop: "0.25rem", opacity: 0.88 }}>
+                {knowledgeBase.description}
+              </div>
+            ) : null}
             <div style={{ fontSize: "0.9rem", marginTop: "0.25rem", opacity: 0.85 }}>
               Documents: {knowledgeBase.document_count}
             </div>

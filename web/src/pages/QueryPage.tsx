@@ -1,13 +1,14 @@
 import { useState } from "react";
 
 import { AnswerView } from "../components/AnswerView";
-import type { QueryPayload, QueryResponse } from "../types";
+import type { CapabilityResponse, QueryPayload, QueryResponse } from "../types";
 
 
 type QueryPageProps = {
   selectedKnowledgeBase: string | null;
   onQuery: (payload: QueryPayload) => Promise<QueryResponse>;
   isQuerying: boolean;
+  capabilities: CapabilityResponse | null;
 };
 
 
@@ -43,6 +44,11 @@ export function QueryPage(props: QueryPageProps) {
   return (
     <section style={panelStyle}>
       <h2 style={{ marginTop: 0 }}>Query</h2>
+      {props.capabilities ? (
+        <div style={noticeStyle}>
+          Current limit: {props.capabilities.max_query_kbs} KB per query. Multi-KB query status: {props.capabilities.multi_kb_query_status}.
+        </div>
+      ) : null}
       <form onSubmit={handleSubmit} style={{ display: "grid", gap: "0.9rem" }}>
         <label style={{ display: "grid", gap: "0.35rem" }}>
           <span style={{ fontWeight: 600 }}>Question</span>
@@ -96,4 +102,14 @@ const primaryButtonStyle = {
   cursor: "pointer",
   fontWeight: 700,
   padding: "0.8rem 1rem",
+};
+
+
+const noticeStyle = {
+  background: "#eef5f8",
+  border: "1px solid #cad7df",
+  borderRadius: "12px",
+  color: "#234257",
+  marginBottom: "1rem",
+  padding: "0.75rem 0.85rem",
 };

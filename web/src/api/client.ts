@@ -1,4 +1,6 @@
 import type {
+  CapabilityResponse,
+  CreateKnowledgeBasePayload,
   DocumentRecord,
   HealthResponse,
   KnowledgeBase,
@@ -34,8 +36,21 @@ export function getHealth() {
 }
 
 
+export function getCapabilities() {
+  return requestJson<CapabilityResponse>("/api/health/capabilities");
+}
+
+
 export function getKnowledgeBases() {
   return requestJson<KnowledgeBase[]>("/api/kbs");
+}
+
+
+export function createKnowledgeBase(payload: CreateKnowledgeBasePayload) {
+  return requestJson<KnowledgeBase>("/api/kbs", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
 }
 
 

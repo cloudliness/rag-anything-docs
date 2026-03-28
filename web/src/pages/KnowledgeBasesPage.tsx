@@ -1,5 +1,7 @@
+import { useState } from "react";
+
 import { KnowledgeBasePicker } from "../components/KnowledgeBasePicker";
-import type { DocumentRecord, KnowledgeBase } from "../types";
+import type { CapabilityResponse, CreateKnowledgeBasePayload, DocumentRecord, KnowledgeBase } from "../types";
 
 
 type KnowledgeBasesPageProps = {
@@ -8,6 +10,8 @@ type KnowledgeBasesPageProps = {
   onSelectKnowledgeBase: (knowledgeBaseName: string) => void;
   documents: DocumentRecord[];
   isLoadingDocuments: boolean;
+  capabilities: CapabilityResponse | null;
+  onCreateKnowledgeBase: (payload: CreateKnowledgeBasePayload) => Promise<void>;
 };
 
 
@@ -18,6 +22,33 @@ function displayFileName(fileName: string) {
 
 
 export function KnowledgeBasesPage(props: KnowledgeBasesPageProps) {
+  const [kbName, setKbName] = useState("");
+  const [kbDescription, setKbDescription] = useState("");
+  const [isCreating, setIsCreating] = useState(false);
+  const [createMessage, setCreateMessage] = useState<string | null>(null);
+  const [createError, setCreateError] = useState<string | null>(null);
+
+  async function handleCreateKnowledgeBase(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setCreateMessage(null);
+    setCreateError(null);
+    setIsCreating(true);
+
+    try {
+      await props.onCreateKnowledgeBase({
+        name: kbName,
+        description: kbDescription || null,
+      });
+      setCreateMessage(`Created knowledge base ${kbName}.`);
+      setKbName("");
+      setKbDescription("");
+    } catch (error) {
+      setCreateError(error instanceof Error ? error.message : "Failed to create knowledge base");
+    } finally {
+      setIsCreating(false);
+    }
+  }
+
   return (
     <section style={sectionStyle}>
       <div style={headerRowStyle}>
@@ -27,8 +58,39 @@ export function KnowledgeBasesPage(props: KnowledgeBasesPageProps) {
         </div>
       </div>
 
+      {props.capabilities ? (
+        <div style={capabilityBannerStyle}>
+          Phase 1 supports one active KB for upload and query. Multi-KB query is {props.capabilities.multi_kb_query_status} and will use query-then-merge when enabled.
+        </div>
+      ) : null}
+
       <div style={twoColumnStyle}>
         <div>
+          <div style={panelStyle}>
+            <h3 style={{ marginTop: 0 }}>Create KB</h3>
+            <form onSubmit={handleCreateKnowledgeBase} style={{ display: "grid", gap: "0.75rem" }}>
+              <input
+                onChange={(event) => setKbName(event.target.value)}
+                placeholder="math-notes"
+                required
+                style={inputStyle}
+                value={kbName}
+              />
+              <textarea
+                onChange={(event) => setKbDescription(event.target.value)}
+                placeholder="Optional description for the UI"
+                rows={3}
+                style={textareaStyle}
+                value={kbDescription}
+              />
+              <button disabled={isCreating || !props.capabilities?.kb_creation_enabled || !kbName.trim()} style={buttonStyle} type="submit">
+                {isCreating ? "Creating..." : "Create Knowledge Base"}
+              </button>
+            </form>
+            {createMessage ? <div style={successTextStyle}>{createMessage}</div> : null}
+            {createError ? <div style={errorTextStyle}>{createError}</div> : null}
+          </div>
+
           <KnowledgeBasePicker
             knowledgeBases={props.knowledgeBases}
             onSelect={props.onSelectKnowledgeBase}
@@ -111,4 +173,50 @@ const headingStyle = {
 const subtleTextStyle = {
   color: "#52606d",
   margin: 0,
+};
+
+
+const capabilityBannerStyle = {
+  background: "#eef5f8",
+  border: "1px solid #cad7df",
+  borderRadius: "14px",
+  color: "#234257",
+  padding: "0.85rem 1rem",
+};
+
+
+const inputStyle = {
+  background: "#ffffff",
+  border: "1px solid #cad7df",
+  borderRadius: "10px",
+  padding: "0.75rem 0.9rem",
+};
+
+
+const textareaStyle = {
+  ...inputStyle,
+  resize: "vertical" as const,
+};
+
+
+const buttonStyle = {
+  background: "#133b5c",
+  border: "none",
+  borderRadius: "999px",
+  color: "#ffffff",
+  cursor: "pointer",
+  fontWeight: 700,
+  padding: "0.8rem 1rem",
+};
+
+
+const successTextStyle = {
+  color: "#125c2e",
+  marginTop: "0.75rem",
+};
+
+
+const errorTextStyle = {
+  color: "#9f1f1f",
+  marginTop: "0.75rem",
 };

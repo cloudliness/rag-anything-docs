@@ -20,6 +20,30 @@ def _normalize_kb_name(name: str) -> str:
     return normalized
 
 
+def _metadata_path(kb_dir: Path) -> Path:
+    return kb_dir / "metadata.json"
+
+
+def _read_metadata(kb_dir: Path) -> dict[str, str | None]:
+    metadata_path = _metadata_path(kb_dir)
+    if not metadata_path.exists():
+        return {}
+    try:
+        with metadata_path.open("r", encoding="utf-8") as handle:
+            data = json.load(handle)
+        if isinstance(data, dict):
+            return data
+    except (json.JSONDecodeError, OSError):
+        return {}
+    return {}
+
+
+def _write_metadata(kb_dir: Path, payload: dict[str, str | None]) -> None:
+    metadata_path = _metadata_path(kb_dir)
+    with metadata_path.open("w", encoding="utf-8") as handle:
+        json.dump(payload, handle, indent=2)
+
+
 def _document_count_for_kb(storage_dir: Path) -> int:
     doc_status_path = storage_dir / "kv_store_doc_status.json"
     if not doc_status_path.exists():
@@ -42,10 +66,11 @@ def list_knowledge_bases() -> list[KnowledgeBaseResponse]:
         if not child.is_dir():
             continue
         storage_dir = child / "storage"
+        metadata = _read_metadata(child)
         responses.append(
             KnowledgeBaseResponse(
                 name=child.name,
-                description=None,
+                description=metadata.get("description"),
                 document_count=_document_count_for_kb(storage_dir),
             )
         )
@@ -57,6 +82,13 @@ def create_knowledge_base(payload: CreateKnowledgeBaseRequest) -> KnowledgeBaseR
     kb_dir = _kb_root() / normalized_name
     (kb_dir / "storage").mkdir(parents=True, exist_ok=True)
     (kb_dir / "parsed_output").mkdir(parents=True, exist_ok=True)
+    _write_metadata(
+        kb_dir,
+        {
+            "name": normalized_name,
+            "description": payload.description,
+        },
+    )
     return KnowledgeBaseResponse(
         name=normalized_name,
         description=payload.description,
