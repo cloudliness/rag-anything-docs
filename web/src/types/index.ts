@@ -51,6 +51,9 @@ export type IngestJob = {
   requested_start_page?: number | null;
   requested_end_page?: number | null;
   requested_page_count?: number | null;
+  actual_processed_start_page?: number | null;
+  actual_processed_end_page?: number | null;
+  actual_processed_page_count?: number | null;
   created_at: string;
   updated_at: string;
   started_at?: string | null;

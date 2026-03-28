@@ -103,6 +103,9 @@ def _to_response(job: dict) -> IngestJobResponse:
         requested_start_page=job.get("start_page"),
         requested_end_page=job.get("end_page"),
         requested_page_count=job.get("requested_page_count"),
+        actual_processed_start_page=job.get("actual_processed_start_page"),
+        actual_processed_end_page=job.get("actual_processed_end_page"),
+        actual_processed_page_count=job.get("actual_processed_page_count"),
         created_at=job.get("created_at", _now_iso()),
         updated_at=job.get("updated_at", _now_iso()),
         started_at=job.get("started_at"),
@@ -162,6 +165,9 @@ def create_ingest_job(
         "start_page": start_page,
         "end_page": end_page,
         "requested_page_count": _requested_page_count(page, start_page, end_page),
+        "actual_processed_start_page": None,
+        "actual_processed_end_page": None,
+        "actual_processed_page_count": None,
     }
     with _job_lock:
         _jobs[job["job_id"]] = job
@@ -186,7 +192,14 @@ def update_ingest_job(job_id: str, *, status: str | None = None, progress: int |
         return _to_response(job)
 
 
-def complete_ingest_job(job_id: str, result: DocumentResponse) -> IngestJobResponse:
+def complete_ingest_job(
+    job_id: str,
+    result: DocumentResponse,
+    *,
+    actual_processed_start_page: int | None = None,
+    actual_processed_end_page: int | None = None,
+    actual_processed_page_count: int | None = None,
+) -> IngestJobResponse:
     _ensure_loaded()
     with _job_lock:
         job = _require_job_locked(job_id)
@@ -196,6 +209,9 @@ def complete_ingest_job(job_id: str, result: DocumentResponse) -> IngestJobRespo
         job["result"] = result.model_dump()
         job["error"] = None
         job["cancel_requested"] = False
+        job["actual_processed_start_page"] = actual_processed_start_page
+        job["actual_processed_end_page"] = actual_processed_end_page
+        job["actual_processed_page_count"] = actual_processed_page_count
         job["completed_at"] = _now_iso()
         job["duration_ms"] = _duration_ms(job.get("started_at"), job.get("completed_at"))
         job["updated_at"] = _now_iso()

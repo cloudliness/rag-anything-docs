@@ -14,6 +14,7 @@ import {
   startBrowserUploadJob,
 } from "./api/client";
 import { DashboardPage } from "./pages/DashboardPage";
+import { JobsPage } from "./pages/JobsPage";
 import { KnowledgeBasesPage } from "./pages/KnowledgeBasesPage";
 import { QueryPage } from "./pages/QueryPage";
 import { UploadPage } from "./pages/UploadPage";
@@ -28,6 +29,9 @@ import type {
   QueryPayload,
   QueryResponse,
 } from "./types";
+
+
+const JOB_HISTORY_LIMIT = 50;
 
 
 export function App() {
@@ -50,7 +54,7 @@ export function App() {
   }
 
   async function refreshUploadJobs() {
-    const jobs = await getIngestJobs(12);
+    const jobs = await getIngestJobs(JOB_HISTORY_LIMIT);
     setRecentUploadJobs(jobs);
     syncCurrentUploadJob(jobs);
     return jobs;
@@ -77,7 +81,7 @@ export function App() {
           getHealth(),
           getCapabilities(),
           getKnowledgeBases(),
-          getIngestJobs(12),
+          getIngestJobs(JOB_HISTORY_LIMIT),
         ]);
         setHealth(healthResponse);
         setCapabilities(capabilityResponse);
@@ -291,6 +295,14 @@ export function App() {
             selectedKnowledgeBases={queryKnowledgeBases}
           />
         </div>
+
+        <JobsPage
+          isUploading={isUploading}
+          jobs={recentUploadJobs}
+          knowledgeBases={knowledgeBases}
+          onCancelUpload={handleCancelUpload}
+          onRetryUpload={handleRetryUpload}
+        />
       </div>
     </main>
   );

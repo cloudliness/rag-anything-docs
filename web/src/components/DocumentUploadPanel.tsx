@@ -51,6 +51,12 @@ export function DocumentUploadPanel(props: DocumentUploadPanelProps) {
   }
 
   function formatRequestedPages(job: IngestJob) {
+    if (job.actual_processed_page_count != null) {
+      if (job.actual_processed_start_page != null && job.actual_processed_end_page != null) {
+        return `processed ${job.actual_processed_page_count} page${job.actual_processed_page_count === 1 ? "" : "s"} (${job.actual_processed_start_page}-${job.actual_processed_end_page})`;
+      }
+      return `processed ${job.actual_processed_page_count} page${job.actual_processed_page_count === 1 ? "" : "s"}`;
+    }
     if (job.requested_page != null) {
       return `page ${job.requested_page}`;
     }

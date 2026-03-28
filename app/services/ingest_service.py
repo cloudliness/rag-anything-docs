@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import shutil
@@ -195,6 +196,55 @@ def _report_progress(progress_callback: Callable[[int, str], None] | None, progr
         progress_callback(progress, message)
 
 
+def _load_storage_json(path: Path) -> dict:
+    if not path.exists():
+        return {}
+    try:
+        with path.open("r", encoding="utf-8") as handle:
+            return json.load(handle)
+    except (json.JSONDecodeError, OSError):
+        return {}
+
+
+def _processed_page_summary(kb_name: str, file_name: str) -> tuple[int | None, int | None, int | None]:
+    kb_paths = _kb_paths(kb_name)
+    doc_status_map = _load_storage_json(kb_paths["storage"] / "kv_store_doc_status.json")
+    parse_cache_map = _load_storage_json(kb_paths["storage"] / "kv_store_parse_cache.json")
+
+    target_name = Path(file_name).name.lower()
+    matching_doc_id = None
+    matching_doc_sort_key = ""
+
+    for doc_id, record in doc_status_map.items():
+        record_name = Path(str(record.get("file_path", ""))).name.lower()
+        if record_name != target_name:
+            continue
+        sort_key = str(record.get("updated_at") or record.get("created_at") or "")
+        if matching_doc_id is None or sort_key >= matching_doc_sort_key:
+            matching_doc_id = doc_id
+            matching_doc_sort_key = sort_key
+
+    if matching_doc_id is None:
+        return None, None, None
+
+    page_numbers: set[int] = set()
+    for entry in parse_cache_map.values():
+        if entry.get("doc_id") != matching_doc_id:
+            continue
+        for item in entry.get("content_list", []):
+            page_idx = item.get("page_idx")
+            try:
+                page_numbers.add(int(page_idx) + 1)
+            except (TypeError, ValueError):
+                continue
+
+    if not page_numbers:
+        return None, None, None
+
+    sorted_pages = sorted(page_numbers)
+    return len(sorted_pages), sorted_pages[0], sorted_pages[-1]
+
+
 def _raise_if_job_canceled(job_id: str, message: str) -> None:
     if is_cancel_requested(job_id):
         raise IngestJobCanceledError(message)
@@ -324,7 +374,14 @@ async def _run_browser_upload_job(
             display_name=file_name,
             progress_callback=lambda progress, message: update_ingest_job(job_id, status="running", progress=progress, message=message),
         )
-        complete_ingest_job(job_id, result)
+        actual_page_count, actual_start_page, actual_end_page = _processed_page_summary(knowledge_base, file_name)
+        complete_ingest_job(
+            job_id,
+            result,
+            actual_processed_start_page=actual_start_page,
+            actual_processed_end_page=actual_end_page,
+            actual_processed_page_count=actual_page_count,
+        )
     except IngestJobCanceledError as exc:
         mark_ingest_job_canceled(job_id, str(exc))
     except Exception as exc:

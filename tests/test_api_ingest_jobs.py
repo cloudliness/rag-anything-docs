@@ -5,6 +5,7 @@ from fastapi.testclient import TestClient
 
 from app.api.main import create_app
 from app.api.routes import documents
+from app.schemas.document import DocumentResponse
 from app.services import ingest_jobs
 
 
@@ -116,3 +117,39 @@ def test_job_filtering_by_knowledge_base(isolated_job_store):
     assert len(jobs) == 1
     assert jobs[0]["knowledge_base"] == "math_docs"
     assert jobs[0]["requested_page_count"] == 3
+
+
+def test_completed_job_exposes_actual_processed_page_telemetry(isolated_job_store):
+    source_file = isolated_job_store / "sample.txt"
+    source_file.write_text("sample upload body", encoding="utf-8")
+
+    job = ingest_jobs.create_ingest_job(
+        file_name="sample.txt",
+        knowledge_base="math_docs",
+        source_path=str(source_file),
+        parser_backend="mineru",
+        parse_method="auto",
+        reset=False,
+        page=None,
+        start_page=4,
+        end_page=7,
+    )
+
+    ingest_jobs.update_ingest_job(job.job_id, status="running", progress=80, message="Finishing")
+    ingest_jobs.complete_ingest_job(
+        job.job_id,
+        DocumentResponse(file_name="sample.txt", knowledge_base="math_docs", status="processed"),
+        actual_processed_start_page=5,
+        actual_processed_end_page=6,
+        actual_processed_page_count=2,
+    )
+
+    client = TestClient(create_app())
+    response = client.get(f"/api/documents/jobs/{job.job_id}")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["actual_processed_start_page"] == 5
+    assert payload["actual_processed_end_page"] == 6
+    assert payload["actual_processed_page_count"] == 2
+    assert payload["duration_ms"] is not None

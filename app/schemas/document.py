@@ -31,6 +31,9 @@ class IngestJobResponse(BaseModel):
     requested_start_page: int | None = None
     requested_end_page: int | None = None
     requested_page_count: int | None = None
+    actual_processed_start_page: int | None = None
+    actual_processed_end_page: int | None = None
+    actual_processed_page_count: int | None = None
     created_at: str
     updated_at: str
     started_at: str | None = None

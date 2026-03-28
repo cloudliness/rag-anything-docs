@@ -28,6 +28,16 @@ export function DashboardPage(props: DashboardPageProps) {
     return `${(durationMs / 1000).toFixed(1)} s`;
   }
 
+  function formatProcessedPages(job: IngestJob) {
+    if (job.actual_processed_page_count != null) {
+      return `${job.actual_processed_page_count} processed page${job.actual_processed_page_count === 1 ? "" : "s"}`;
+    }
+    if (job.requested_page_count != null) {
+      return `${job.requested_page_count} requested page${job.requested_page_count === 1 ? "" : "s"}`;
+    }
+    return "all pages requested";
+  }
+
   return (
     <section
       style={{
@@ -66,7 +76,7 @@ export function DashboardPage(props: DashboardPageProps) {
                   <div style={{ fontWeight: 700 }}>{job.file_name}</div>
                   <div style={{ fontSize: "0.9rem", opacity: 0.9 }}>{job.status} | {job.parser_backend}/{job.parse_method ?? "auto"}</div>
                   <div style={{ fontSize: "0.88rem", opacity: 0.84 }}>
-                    {job.requested_page_count != null ? `${job.requested_page_count} page${job.requested_page_count === 1 ? "" : "s"}` : "all pages"} | {formatDuration(job.duration_ms ?? null)}
+                    {formatProcessedPages(job)} | {formatDuration(job.duration_ms ?? null)}
                   </div>
                 </div>
               ))}
