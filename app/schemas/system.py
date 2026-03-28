@@ -20,6 +20,7 @@ class CapabilityResponse(BaseModel):
     multi_kb_upload_status: str
     kb_creation_enabled: bool
     path_upload_enabled: bool
+    browser_upload_enabled: bool
     math_rendering_status: str
     citation_grounding_status: str
     notes: list[str]

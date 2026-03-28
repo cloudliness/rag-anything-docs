@@ -1,11 +1,12 @@
-import asyncio
 import os
 import re
+import shutil
 import sys
 from pathlib import Path
+from uuid import uuid4
 
 from dotenv import load_dotenv
-from fastapi import HTTPException
+from fastapi import HTTPException, UploadFile
 from lightrag.llm.openai import openai_complete_if_cache, openai_embed
 from lightrag.utils import EmbeddingFunc
 
@@ -35,23 +36,27 @@ def _load_environment() -> None:
     os.environ["PATH"] = f"{env_bin}:{os.environ.get('PATH', '')}"
 
 
-def _resolve_page_bounds(payload: UploadDocumentRequest) -> tuple[int | None, int | None]:
-    if payload.page is not None and (payload.start_page is not None or payload.end_page is not None):
+def _resolve_page_bounds(
+    page: int | None,
+    start_page: int | None,
+    end_page: int | None,
+) -> tuple[int | None, int | None]:
+    if page is not None and (start_page is not None or end_page is not None):
         raise HTTPException(status_code=400, detail="Use either page or start_page/end_page, not both")
-    if payload.page is not None:
-        if payload.page < 1:
+    if page is not None:
+        if page < 1:
             raise HTTPException(status_code=400, detail="page must be 1 or greater")
-        zero_based = payload.page - 1
+        zero_based = page - 1
         return zero_based, zero_based
-    if payload.start_page is None and payload.end_page is None:
+    if start_page is None and end_page is None:
         return None, None
-    if payload.start_page is None:
+    if start_page is None:
         raise HTTPException(status_code=400, detail="end_page requires start_page")
-    if payload.start_page < 1:
+    if start_page < 1:
         raise HTTPException(status_code=400, detail="start_page must be 1 or greater")
-    if payload.end_page is not None and payload.end_page < payload.start_page:
+    if end_page is not None and end_page < start_page:
         raise HTTPException(status_code=400, detail="end_page must be greater than or equal to start_page")
-    return payload.start_page - 1, None if payload.end_page is None else payload.end_page - 1
+    return start_page - 1, None if end_page is None else end_page - 1
 
 
 def _default_runtime_options() -> dict[str, int]:
@@ -77,6 +82,7 @@ def _kb_paths(kb_name: str) -> dict[str, Path]:
         "name": Path(normalized),
         "storage": root / "knowledge_bases" / normalized / "storage",
         "output": root / "knowledge_bases" / normalized / "parsed_output",
+        "uploads": root / "knowledge_bases" / normalized / "source_uploads",
     }
 
 
@@ -138,6 +144,76 @@ def _create_rag(kb_name: str) -> RAGAnything:
     )
 
 
+def _reset_knowledge_base(kb_paths: dict[str, Path]) -> None:
+    for key in ("storage", "output"):
+        target = kb_paths[key]
+        if not target.exists():
+            continue
+        for child in target.iterdir():
+            if child.is_dir():
+                shutil.rmtree(child)
+            else:
+                child.unlink()
+
+
+def _persist_uploaded_file(upload_file: UploadFile, kb_name: str) -> Path:
+    kb_paths = _kb_paths(kb_name)
+    kb_paths["uploads"].mkdir(parents=True, exist_ok=True)
+
+    original_name = Path(upload_file.filename or "uploaded-document").name
+    safe_stem = re.sub(r"[^a-zA-Z0-9._-]+", "-", Path(original_name).stem).strip(".-") or "uploaded-document"
+    suffix = Path(original_name).suffix
+    destination = kb_paths["uploads"] / f"{safe_stem}{suffix}"
+
+    if destination.exists():
+        destination = kb_paths["uploads"] / f"{safe_stem}-{uuid4().hex[:8]}{suffix}"
+
+    upload_file.file.seek(0)
+    with destination.open("wb") as handle:
+        shutil.copyfileobj(upload_file.file, handle)
+
+    return destination
+
+
+async def _process_document(
+    *,
+    source_path: Path,
+    kb_name: str,
+    parse_method: str | None,
+    reset: bool,
+    page: int | None,
+    start_page: int | None,
+    end_page: int | None,
+    display_name: str | None = None,
+) -> DocumentResponse:
+    start_page_value, end_page_value = _resolve_page_bounds(page, start_page, end_page)
+    kb_paths = _kb_paths(kb_name)
+    if reset:
+        _reset_knowledge_base(kb_paths)
+
+    rag = _create_rag(kb_name)
+    kb_paths["output"].mkdir(parents=True, exist_ok=True)
+    parser_kwargs = {}
+    if start_page_value is not None:
+        parser_kwargs["start_page"] = start_page_value
+    if end_page_value is not None:
+        parser_kwargs["end_page"] = end_page_value
+
+    await rag.process_document_complete(
+        file_path=str(source_path),
+        output_dir=str(kb_paths["output"]),
+        parse_method=parse_method or os.getenv("PARSE_METHOD", "auto"),
+        **parser_kwargs,
+    )
+
+    return DocumentResponse(
+        file_name=display_name or source_path.name,
+        knowledge_base=kb_name,
+        status="processed",
+        parsed_output_path=str(kb_paths["output"]),
+    )
+
+
 async def upload_document(payload: UploadDocumentRequest) -> DocumentResponse:
     if not payload.knowledge_bases:
         raise HTTPException(status_code=400, detail="At least one knowledge base must be provided")
@@ -150,37 +226,41 @@ async def upload_document(payload: UploadDocumentRequest) -> DocumentResponse:
         raise HTTPException(status_code=404, detail=f"Document not found: {source_path}")
 
     kb_name = _normalize_kb_name(payload.knowledge_bases[0])
-    start_page, end_page = _resolve_page_bounds(payload)
-    kb_paths = _kb_paths(kb_name)
-    if payload.reset:
-        for key in ("storage", "output"):
-            target = kb_paths[key]
-            if target.exists():
-                for child in target.iterdir():
-                    if child.is_dir():
-                        import shutil
-                        shutil.rmtree(child)
-                    else:
-                        child.unlink()
-
-    rag = _create_rag(kb_name)
-    kb_paths["output"].mkdir(parents=True, exist_ok=True)
-    parser_kwargs = {}
-    if start_page is not None:
-        parser_kwargs["start_page"] = start_page
-    if end_page is not None:
-        parser_kwargs["end_page"] = end_page
-
-    await rag.process_document_complete(
-        file_path=str(source_path),
-        output_dir=str(kb_paths["output"]),
-        parse_method=payload.parse_method or os.getenv("PARSE_METHOD", "auto"),
-        **parser_kwargs,
+    return await _process_document(
+        source_path=source_path,
+        kb_name=kb_name,
+        parse_method=payload.parse_method,
+        reset=payload.reset,
+        page=payload.page,
+        start_page=payload.start_page,
+        end_page=payload.end_page,
     )
 
-    return DocumentResponse(
-        file_name=source_path.name,
-        knowledge_base=kb_name,
-        status="processed",
-        parsed_output_path=str(kb_paths["output"]),
+    
+
+async def upload_browser_file(
+    *,
+    file: UploadFile,
+    knowledge_base: str,
+    parse_method: str | None,
+    reset: bool,
+    page: int | None,
+    start_page: int | None,
+    end_page: int | None,
+) -> DocumentResponse:
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="A file must be provided")
+
+    _load_environment()
+    kb_name = _normalize_kb_name(knowledge_base)
+    persisted_path = _persist_uploaded_file(file, kb_name)
+    return await _process_document(
+        source_path=persisted_path,
+        kb_name=kb_name,
+        parse_method=parse_method,
+        reset=reset,
+        page=page,
+        start_page=start_page,
+        end_page=end_page,
+        display_name=file.filename,
     )

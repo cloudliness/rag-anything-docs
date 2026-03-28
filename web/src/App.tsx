@@ -7,13 +7,14 @@ import {
   getHealth,
   getKnowledgeBases,
   queryKnowledgeBase,
-  uploadDocument,
+  uploadBrowserFile,
 } from "./api/client";
 import { DashboardPage } from "./pages/DashboardPage";
 import { KnowledgeBasesPage } from "./pages/KnowledgeBasesPage";
 import { QueryPage } from "./pages/QueryPage";
 import { UploadPage } from "./pages/UploadPage";
 import type {
+  BrowserUploadPayload,
   CapabilityResponse,
   CreateKnowledgeBasePayload,
   DocumentRecord,
@@ -21,7 +22,6 @@ import type {
   KnowledgeBase,
   QueryPayload,
   QueryResponse,
-  UploadDocumentPayload,
 } from "./types";
 
 
@@ -35,6 +35,7 @@ export function App() {
   const [isUploading, setIsUploading] = useState(false);
   const [isQuerying, setIsQuerying] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [queryKnowledgeBases, setQueryKnowledgeBases] = useState<string[]>([]);
 
   useEffect(() => {
     async function load() {
@@ -52,6 +53,23 @@ export function App() {
 
     void load();
   }, []);
+
+  useEffect(() => {
+    setQueryKnowledgeBases((currentSelection) => {
+      const availableKnowledgeBases = new Set(knowledgeBases.map((knowledgeBase) => knowledgeBase.name));
+      const filteredSelection = currentSelection.filter((knowledgeBaseName) => availableKnowledgeBases.has(knowledgeBaseName));
+
+      if (filteredSelection.length > 0) {
+        return filteredSelection;
+      }
+
+      if (selectedKnowledgeBase && availableKnowledgeBases.has(selectedKnowledgeBase)) {
+        return [selectedKnowledgeBase];
+      }
+
+      return knowledgeBases[0]?.name ? [knowledgeBases[0].name] : [];
+    });
+  }, [knowledgeBases, selectedKnowledgeBase]);
 
   useEffect(() => {
     async function loadDocuments() {
@@ -86,14 +104,14 @@ export function App() {
     setDocuments(records);
   }
 
-  async function handleUpload(payload: UploadDocumentPayload) {
+  async function handleUpload(payload: BrowserUploadPayload) {
     setIsUploading(true);
     setErrorMessage(null);
 
     try {
-      await uploadDocument(payload);
+      await uploadBrowserFile(payload);
       const kbs = await refreshKnowledgeBases();
-      const kbName = payload.knowledge_bases[0] ?? selectedKnowledgeBase;
+      const kbName = payload.knowledge_base ?? selectedKnowledgeBase;
 
       if (kbName) {
         setSelectedKnowledgeBase(kbName);
@@ -123,6 +141,7 @@ export function App() {
     const created = await createKnowledgeBase(payload);
     await refreshKnowledgeBases();
     setSelectedKnowledgeBase(created.name);
+    setQueryKnowledgeBases([created.name]);
     setDocuments([]);
   }
 
@@ -141,7 +160,7 @@ export function App() {
       <header style={{ marginBottom: "1.25rem" }}>
         <h1 style={{ fontSize: "2.2rem", marginBottom: "0.3rem", marginTop: 0 }}>RAG Pipeline Product UI</h1>
         <p style={{ color: "#52606d", margin: 0 }}>
-          Phase 1 now supports real KB selection, document listing, path-based ingest, and single-KB querying with citations.
+          Phase 1 now supports KB creation, browser upload, multi-KB query synthesis, and markdown plus math answer rendering.
         </p>
       </header>
 
@@ -161,7 +180,14 @@ export function App() {
 
         <div style={{ display: "grid", gap: "1rem", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)" }}>
           <UploadPage capabilities={capabilities} isUploading={isUploading} onUpload={handleUpload} selectedKnowledgeBase={selectedKnowledgeBase} />
-          <QueryPage capabilities={capabilities} isQuerying={isQuerying} onQuery={handleQuery} selectedKnowledgeBase={selectedKnowledgeBase} />
+          <QueryPage
+            capabilities={capabilities}
+            isQuerying={isQuerying}
+            knowledgeBases={knowledgeBases}
+            onQuery={handleQuery}
+            onSelectedKnowledgeBasesChange={setQueryKnowledgeBases}
+            selectedKnowledgeBases={queryKnowledgeBases}
+          />
         </div>
       </div>
     </main>

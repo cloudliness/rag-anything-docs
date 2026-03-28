@@ -1,12 +1,14 @@
 import { useState } from "react";
 
 import { AnswerView } from "../components/AnswerView";
-import type { CapabilityResponse, QueryPayload, QueryResponse } from "../types";
+import type { CapabilityResponse, KnowledgeBase, QueryPayload, QueryResponse } from "../types";
 
 
 type QueryPageProps = {
-  selectedKnowledgeBase: string | null;
+  knowledgeBases: KnowledgeBase[];
   onQuery: (payload: QueryPayload) => Promise<QueryResponse>;
+  onSelectedKnowledgeBasesChange: (knowledgeBaseNames: string[]) => void;
+  selectedKnowledgeBases: string[];
   isQuerying: boolean;
   capabilities: CapabilityResponse | null;
 };
@@ -17,11 +19,30 @@ export function QueryPage(props: QueryPageProps) {
   const [answer, setAnswer] = useState<QueryResponse | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const maxSelectableKnowledgeBases = props.capabilities?.max_query_kbs ?? 1;
+
+  function toggleKnowledgeBase(knowledgeBaseName: string) {
+    const isSelected = props.selectedKnowledgeBases.includes(knowledgeBaseName);
+
+    if (isSelected) {
+      props.onSelectedKnowledgeBasesChange(
+        props.selectedKnowledgeBases.filter((selectedKnowledgeBase) => selectedKnowledgeBase !== knowledgeBaseName),
+      );
+      return;
+    }
+
+    if (props.selectedKnowledgeBases.length >= maxSelectableKnowledgeBases) {
+      return;
+    }
+
+    props.onSelectedKnowledgeBasesChange([...props.selectedKnowledgeBases, knowledgeBaseName]);
+  }
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!props.selectedKnowledgeBase) {
-      setErrorMessage("Select a knowledge base before querying.");
+    if (props.selectedKnowledgeBases.length === 0) {
+      setErrorMessage("Select at least one knowledge base before querying.");
       return;
     }
 
@@ -30,7 +51,7 @@ export function QueryPage(props: QueryPageProps) {
     try {
       const result = await props.onQuery({
         question,
-        knowledge_bases: [props.selectedKnowledgeBase],
+        knowledge_bases: props.selectedKnowledgeBases,
         query_mode: "hybrid",
         answer_mode: "detailed",
       });
@@ -50,6 +71,31 @@ export function QueryPage(props: QueryPageProps) {
         </div>
       ) : null}
       <form onSubmit={handleSubmit} style={{ display: "grid", gap: "0.9rem" }}>
+        <div style={{ display: "grid", gap: "0.55rem" }}>
+          <span style={{ fontWeight: 600 }}>Query scope</span>
+          <div style={scopePanelStyle}>
+            {props.knowledgeBases.map((knowledgeBase) => {
+              const isSelected = props.selectedKnowledgeBases.includes(knowledgeBase.name);
+              const disableCheckbox = !isSelected && props.selectedKnowledgeBases.length >= maxSelectableKnowledgeBases;
+
+              return (
+                <label key={knowledgeBase.name} style={scopeOptionStyle}>
+                  <input
+                    checked={isSelected}
+                    disabled={disableCheckbox}
+                    onChange={() => toggleKnowledgeBase(knowledgeBase.name)}
+                    type="checkbox"
+                  />
+                  <span>{knowledgeBase.name}</span>
+                </label>
+              );
+            })}
+          </div>
+          <span style={{ color: "#52606d", fontSize: "0.92rem" }}>
+            Selected {props.selectedKnowledgeBases.length} of {maxSelectableKnowledgeBases} knowledge bases.
+          </span>
+        </div>
+
         <label style={{ display: "grid", gap: "0.35rem" }}>
           <span style={{ fontWeight: 600 }}>Question</span>
           <textarea
@@ -112,4 +158,21 @@ const noticeStyle = {
   color: "#234257",
   marginBottom: "1rem",
   padding: "0.75rem 0.85rem",
+};
+
+
+const scopePanelStyle = {
+  background: "#f7fafc",
+  border: "1px solid #d7e0e7",
+  borderRadius: "12px",
+  display: "grid",
+  gap: "0.65rem",
+  padding: "0.85rem 0.95rem",
+};
+
+
+const scopeOptionStyle = {
+  alignItems: "center",
+  display: "flex",
+  gap: "0.5rem",
 };

@@ -1,10 +1,10 @@
 import { DocumentUploadPanel } from "../components/DocumentUploadPanel";
-import type { CapabilityResponse, UploadDocumentPayload } from "../types";
+import type { BrowserUploadPayload, CapabilityResponse } from "../types";
 
 
 type UploadPageProps = {
   selectedKnowledgeBase: string | null;
-  onUpload: (payload: UploadDocumentPayload) => Promise<void>;
+  onUpload: (payload: BrowserUploadPayload) => Promise<void>;
   isUploading: boolean;
   capabilities: CapabilityResponse | null;
 };
@@ -15,11 +15,11 @@ export function UploadPage(props: UploadPageProps) {
     <section style={panelStyle}>
       <h2 style={{ marginTop: 0 }}>Ingest Document</h2>
       <p style={subtleTextStyle}>
-        Upload is currently path-based for Phase 1. Point at a local file and the backend will ingest it into the selected KB.
+        Browser upload is enabled. Choose a local file and the backend will ingest it into the selected knowledge base.
       </p>
       {props.capabilities ? (
         <div style={noticeStyle}>
-          Current limit: {props.capabilities.max_upload_target_kbs} KB per upload. Multi-KB ingest status: {props.capabilities.multi_kb_upload_status}.
+          Current limit: {props.capabilities.max_upload_target_kbs} KB per upload. Browser upload: {props.capabilities.browser_upload_enabled ? "enabled" : "disabled"}. Multi-KB ingest status: {props.capabilities.multi_kb_upload_status}.
         </div>
       ) : null}
       <DocumentUploadPanel

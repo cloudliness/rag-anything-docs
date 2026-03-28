@@ -1,3 +1,7 @@
+import ReactMarkdown from "react-markdown";
+import rehypeKatex from "rehype-katex";
+import remarkMath from "remark-math";
+
 import type { Citation } from "../types";
 
 
@@ -17,10 +21,9 @@ export function AnswerView(props: AnswerViewProps) {
           borderRadius: "16px",
           lineHeight: 1.6,
           padding: "1rem",
-          whiteSpace: "pre-wrap",
         }}
       >
-        {props.answer}
+        <ReactMarkdown rehypePlugins={[rehypeKatex]} remarkPlugins={[remarkMath]}>{props.answer}</ReactMarkdown>
       </div>
 
       <div>

@@ -13,6 +13,9 @@ from app.schemas.query import Citation, QueryRequest, QueryResponse
 from raganything import RAGAnything, RAGAnythingConfig
 
 
+MAX_QUERY_KBS = 8
+
+
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
 
@@ -33,6 +36,14 @@ def _load_environment() -> None:
     load_dotenv(root / ".env", override=False)
     env_bin = str(Path(sys.executable).resolve().parent)
     os.environ["PATH"] = f"{env_bin}:{os.environ.get('PATH', '')}"
+
+
+def _llm_settings() -> dict[str, str]:
+    return {
+        "model": os.environ["LLM_MODEL"],
+        "base_url": _ensure_v1(os.environ["LLM_BINDING_HOST"]),
+        "api_key": os.getenv("LLM_BINDING_API_KEY", "ollama"),
+    }
 
 
 def _create_rag(kb_name: str) -> RAGAnything:
@@ -172,23 +183,109 @@ def _citations_from_answer(kb_name: str, answer: str) -> list[Citation]:
     return citations
 
 
-async def run_query(payload: QueryRequest) -> QueryResponse:
-    selected_kbs = payload.knowledge_bases
-    if not selected_kbs:
-        raise HTTPException(status_code=400, detail="At least one knowledge base must be selected")
-    if len(selected_kbs) != 1:
-        raise HTTPException(status_code=400, detail="Phase 1 query only supports a single knowledge base")
+def _normalize_selected_kbs(selected_kbs: list[str]) -> list[str]:
+    normalized: list[str] = []
+    seen: set[str] = set()
 
-    _load_environment()
-    kb_name = _normalize_kb_name(selected_kbs[0])
+    for kb_name in selected_kbs:
+        normalized_name = _normalize_kb_name(kb_name)
+        if normalized_name in seen:
+            continue
+        seen.add(normalized_name)
+        normalized.append(normalized_name)
+
+    if not normalized:
+        raise HTTPException(status_code=400, detail="At least one knowledge base must be selected")
+    if len(normalized) > MAX_QUERY_KBS:
+        raise HTTPException(status_code=400, detail=f"A maximum of {MAX_QUERY_KBS} knowledge bases can be queried at once")
+
+    return normalized
+
+
+async def _run_query_for_kb(kb_name: str, question: str, query_mode: str) -> dict:
     rag = _create_rag(kb_name)
     await rag._ensure_lightrag_initialized()
-    answer = await rag.aquery(payload.question, mode=payload.query_mode)
-    citations = _citations_from_answer(kb_name, answer)
+    answer = await rag.aquery(question, mode=query_mode)
+    return {
+        "kb_name": kb_name,
+        "answer": answer.strip(),
+        "citations": _citations_from_answer(kb_name, answer),
+    }
+
+
+def _dedupe_citations(citations: list[Citation]) -> list[Citation]:
+    deduped: list[Citation] = []
+    seen: set[tuple[str, str, int | None, str]] = set()
+
+    for citation in citations:
+        key = (citation.kb, citation.document, citation.page, citation.snippet)
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(citation)
+
+    return deduped
+
+
+async def _merge_query_results(question: str, answer_mode: str, kb_results: list[dict]) -> str:
+    llm_settings = _llm_settings()
+    result_sections: list[str] = []
+
+    for result in kb_results:
+        citation_lines: list[str] = []
+        for citation in result["citations"][:5]:
+            page_text = f", page {citation.page}" if citation.page else ""
+            citation_lines.append(f"- {citation.document}{page_text}: {citation.snippet}")
+        citation_summary = "\n".join(citation_lines) or "- No structured citations were extracted for this KB."
+        result_sections.append(
+            f"## Knowledge Base: {result['kb_name']}\n"
+            f"Draft answer:\n{result['answer'] or 'No answer returned.'}\n\n"
+            f"Extracted citations:\n{citation_summary}"
+        )
+
+    merged_result_sections = "\n\n".join(result_sections)
+
+    merge_prompt = (
+        "Combine the following knowledge-base-specific answers into one final markdown answer.\n"
+        "Use only the provided drafts and citation summaries.\n"
+        "If different KBs disagree, say that clearly instead of inventing a reconciliation.\n"
+        f"Target answer style: {answer_mode}.\n\n"
+        f"User question:\n{question}\n\n"
+        "Knowledge-base results:\n\n"
+        f"{merged_result_sections}"
+    )
+
+    return await openai_complete_if_cache(
+        llm_settings["model"],
+        merge_prompt,
+        system_prompt="You are a retrieval answer synthesizer. Return a single clear markdown answer grounded only in the provided drafts.",
+        history_messages=[],
+        api_key=llm_settings["api_key"],
+        base_url=llm_settings["base_url"],
+    )
+
+
+async def run_query(payload: QueryRequest) -> QueryResponse:
+    _load_environment()
+    selected_kbs = _normalize_selected_kbs(payload.knowledge_bases)
+    kb_results: list[dict] = []
+
+    for kb_name in selected_kbs:
+        kb_results.append(await _run_query_for_kb(kb_name, payload.question, payload.query_mode))
+
+    if len(kb_results) == 1:
+        final_answer = kb_results[0]["answer"]
+    else:
+        final_answer = await _merge_query_results(payload.question, payload.answer_mode, kb_results)
+
+    citations = _dedupe_citations(
+        [citation for result in kb_results for citation in result["citations"]]
+    )
+    contributing_kbs = [result["kb_name"] for result in kb_results if result["answer"] or result["citations"]]
 
     return QueryResponse(
-        answer=answer,
-        selected_kbs=[kb_name],
-        contributing_kbs=[kb_name],
+        answer=final_answer,
+        selected_kbs=selected_kbs,
+        contributing_kbs=contributing_kbs,
         citations=citations,
     )

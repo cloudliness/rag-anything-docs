@@ -17,6 +17,7 @@ export type CapabilityResponse = {
   multi_kb_upload_status: string;
   kb_creation_enabled: boolean;
   path_upload_enabled: boolean;
+  browser_upload_enabled: boolean;
   math_rendering_status: string;
   citation_grounding_status: string;
   notes: string[];
@@ -38,6 +39,16 @@ export type DocumentRecord = {
 export type UploadDocumentPayload = {
   source_path: string;
   knowledge_bases: string[];
+  parse_method?: string | null;
+  reset?: boolean;
+  page?: number | null;
+  start_page?: number | null;
+  end_page?: number | null;
+};
+
+export type BrowserUploadPayload = {
+  file: File;
+  knowledge_base: string;
   parse_method?: string | null;
   reset?: boolean;
   page?: number | null;

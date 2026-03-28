@@ -1,4 +1,5 @@
 import type {
+  BrowserUploadPayload,
   CapabilityResponse,
   CreateKnowledgeBasePayload,
   DocumentRecord,
@@ -64,6 +65,39 @@ export function uploadDocument(payload: UploadDocumentPayload) {
     method: "POST",
     body: JSON.stringify(payload),
   });
+}
+
+
+export async function uploadBrowserFile(payload: BrowserUploadPayload) {
+  const formData = new FormData();
+  formData.append("file", payload.file);
+  formData.append("knowledge_base", payload.knowledge_base);
+  formData.append("reset", String(payload.reset ?? false));
+
+  if (payload.parse_method) {
+    formData.append("parse_method", payload.parse_method);
+  }
+  if (payload.page != null) {
+    formData.append("page", String(payload.page));
+  }
+  if (payload.start_page != null) {
+    formData.append("start_page", String(payload.start_page));
+  }
+  if (payload.end_page != null) {
+    formData.append("end_page", String(payload.end_page));
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/documents/upload-file`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || `Request failed with status ${response.status}`);
+  }
+
+  return response.json() as Promise<DocumentRecord>;
 }
 
 

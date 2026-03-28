@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
-import type { UploadDocumentPayload } from "../types";
+import type { BrowserUploadPayload } from "../types";
 
 
 type DocumentUploadPanelProps = {
   selectedKnowledgeBase: string | null;
-  onUpload: (payload: UploadDocumentPayload) => Promise<void>;
+  onUpload: (payload: BrowserUploadPayload) => Promise<void>;
   isUploading: boolean;
 };
 
@@ -21,7 +21,8 @@ function numericValue(value: string): number | null {
 
 
 export function DocumentUploadPanel(props: DocumentUploadPanelProps) {
-  const [sourcePath, setSourcePath] = useState("");
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [parseMethod, setParseMethod] = useState("auto");
   const [page, setPage] = useState("");
   const [startPage, setStartPage] = useState("");
@@ -37,14 +38,18 @@ export function DocumentUploadPanel(props: DocumentUploadPanelProps) {
       setErrorMessage("Select a knowledge base before uploading.");
       return;
     }
+    if (!selectedFile) {
+      setErrorMessage("Choose a file before uploading.");
+      return;
+    }
 
     setMessage(null);
     setErrorMessage(null);
 
     try {
       await props.onUpload({
-        source_path: sourcePath,
-        knowledge_bases: [props.selectedKnowledgeBase],
+        file: selectedFile,
+        knowledge_base: props.selectedKnowledgeBase,
         parse_method: parseMethod || null,
         reset,
         page: numericValue(page),
@@ -52,11 +57,14 @@ export function DocumentUploadPanel(props: DocumentUploadPanelProps) {
         end_page: numericValue(endPage),
       });
 
-      setMessage(`Uploaded into ${props.selectedKnowledgeBase}.`);
-      setSourcePath("");
+      setMessage(`Uploaded ${selectedFile.name} into ${props.selectedKnowledgeBase}.`);
+      setSelectedFile(null);
       setPage("");
       setStartPage("");
       setEndPage("");
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : "Upload failed");
     }
@@ -65,13 +73,15 @@ export function DocumentUploadPanel(props: DocumentUploadPanelProps) {
   return (
     <form onSubmit={handleSubmit} style={{ display: "grid", gap: "0.9rem" }}>
       <label style={{ display: "grid", gap: "0.35rem" }}>
-        <span style={{ fontWeight: 600 }}>Source path</span>
+        <span style={{ fontWeight: 600 }}>File</span>
         <input
-          onChange={(event) => setSourcePath(event.target.value)}
-          placeholder="/home/bc/Documents/math1.pdf"
+          accept=".pdf,.md,.markdown,.txt,.doc,.docx,.ppt,.pptx,.xls,.xlsx"
+          onChange={(event) => setSelectedFile(event.target.files?.[0] ?? null)}
+          ref={fileInputRef}
           style={inputStyle}
-          value={sourcePath}
+          type="file"
         />
+        {selectedFile ? <span style={{ color: "#52606d", fontSize: "0.92rem" }}>Selected: {selectedFile.name}</span> : null}
       </label>
 
       <label style={{ display: "grid", gap: "0.35rem" }}>
