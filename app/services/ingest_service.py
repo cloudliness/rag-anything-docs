@@ -375,11 +375,13 @@ async def create_browser_upload_job(
     _load_environment()
     kb_name = _normalize_kb_name(knowledge_base)
     persisted_path = _persist_uploaded_file(file, kb_name)
+    effective_parse_method = parse_method or os.getenv("PARSE_METHOD", "auto")
     job = create_ingest_job(
         file_name=file.filename,
         knowledge_base=kb_name,
         source_path=str(persisted_path),
-        parse_method=parse_method,
+        parser_backend=os.getenv("PARSER", "mineru"),
+        parse_method=effective_parse_method,
         reset=reset,
         page=page,
         start_page=start_page,
@@ -392,7 +394,7 @@ async def create_browser_upload_job(
         source_path=persisted_path,
         file_name=file.filename,
         knowledge_base=kb_name,
-        parse_method=parse_method,
+        parse_method=effective_parse_method,
         reset=reset,
         page=page,
         start_page=start_page,
@@ -412,6 +414,7 @@ async def create_retry_upload_job(*, background_tasks: BackgroundTasks, job_id: 
         file_name=params["file_name"],
         knowledge_base=params["knowledge_base"],
         source_path=str(source_path),
+        parser_backend=params["parser_backend"],
         parse_method=params["parse_method"],
         reset=bool(params["reset"]),
         page=params["page"],

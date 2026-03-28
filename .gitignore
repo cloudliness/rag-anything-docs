@@ -73,7 +73,9 @@ gui/
 tiktoken_cache/
 
 # unit-test files
-test_*
+/test_*
+!tests/
+!tests/test*.py
 
 # Cline files
 memory-bank/

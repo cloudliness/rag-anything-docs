@@ -7,7 +7,7 @@ from app.api.routes import documents, health, kb, query
 def create_app() -> FastAPI:
     app = FastAPI(
         title="RAG Pipeline Product API",
-        version="0.1.0",
+        version="0.5.0",
         description="Phase 1 scaffold for the product-facing API layer.",
     )
     app.add_middleware(

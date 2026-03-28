@@ -26,6 +26,31 @@ def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _parse_iso(value: str | None) -> datetime | None:
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(value)
+    except ValueError:
+        return None
+
+
+def _requested_page_count(page: int | None, start_page: int | None, end_page: int | None) -> int | None:
+    if page is not None:
+        return 1
+    if start_page is not None and end_page is not None and end_page >= start_page:
+        return (end_page - start_page) + 1
+    return None
+
+
+def _duration_ms(started_at: str | None, completed_at: str | None) -> int | None:
+    started = _parse_iso(started_at)
+    completed = _parse_iso(completed_at)
+    if started is None or completed is None:
+        return None
+    return max(int((completed - started).total_seconds() * 1000), 0)
+
+
 def _ensure_loaded() -> None:
     global _loaded
 
@@ -72,8 +97,17 @@ def _to_response(job: dict) -> IngestJobResponse:
         message=job.get("message", ""),
         knowledge_base=job["knowledge_base"],
         file_name=job["file_name"],
+        parser_backend=job.get("parser_backend", "unknown"),
+        parse_method=job.get("parse_method"),
+        requested_page=job.get("page"),
+        requested_start_page=job.get("start_page"),
+        requested_end_page=job.get("end_page"),
+        requested_page_count=job.get("requested_page_count"),
         created_at=job.get("created_at", _now_iso()),
         updated_at=job.get("updated_at", _now_iso()),
+        started_at=job.get("started_at"),
+        completed_at=job.get("completed_at"),
+        duration_ms=job.get("duration_ms"),
         result=DocumentResponse.model_validate(result) if result else None,
         error=job.get("error"),
         retry_of=job.get("retry_of"),
@@ -94,6 +128,7 @@ def create_ingest_job(
     file_name: str,
     knowledge_base: str,
     source_path: str,
+    parser_backend: str,
     parse_method: str | None,
     reset: bool,
     page: int | None,
@@ -110,8 +145,12 @@ def create_ingest_job(
         "message": "Upload accepted and waiting to start.",
         "knowledge_base": knowledge_base,
         "file_name": file_name,
+        "parser_backend": parser_backend,
         "created_at": timestamp,
         "updated_at": timestamp,
+        "started_at": None,
+        "completed_at": None,
+        "duration_ms": None,
         "result": None,
         "error": None,
         "retry_of": retry_of,
@@ -122,6 +161,7 @@ def create_ingest_job(
         "page": page,
         "start_page": start_page,
         "end_page": end_page,
+        "requested_page_count": _requested_page_count(page, start_page, end_page),
     }
     with _job_lock:
         _jobs[job["job_id"]] = job
@@ -135,6 +175,8 @@ def update_ingest_job(job_id: str, *, status: str | None = None, progress: int |
         job = _require_job_locked(job_id)
         if status is not None:
             job["status"] = status
+            if status == "running" and not job.get("started_at"):
+                job["started_at"] = _now_iso()
         if progress is not None:
             job["progress"] = max(0, min(100, progress))
         if message is not None:
@@ -154,6 +196,8 @@ def complete_ingest_job(job_id: str, result: DocumentResponse) -> IngestJobRespo
         job["result"] = result.model_dump()
         job["error"] = None
         job["cancel_requested"] = False
+        job["completed_at"] = _now_iso()
+        job["duration_ms"] = _duration_ms(job.get("started_at"), job.get("completed_at"))
         job["updated_at"] = _now_iso()
         _persist_jobs_locked()
         return _to_response(job)
@@ -167,6 +211,8 @@ def fail_ingest_job(job_id: str, error: str) -> IngestJobResponse:
         job["progress"] = 100
         job["message"] = "Document ingest failed."
         job["error"] = error
+        job["completed_at"] = _now_iso()
+        job["duration_ms"] = _duration_ms(job.get("started_at"), job.get("completed_at"))
         job["updated_at"] = _now_iso()
         _persist_jobs_locked()
         return _to_response(job)
@@ -180,6 +226,8 @@ def cancel_ingest_job(job_id: str) -> IngestJobResponse:
             job["status"] = "canceled"
             job["message"] = "Ingest job canceled before processing started."
             job["cancel_requested"] = False
+            job["completed_at"] = _now_iso()
+            job["duration_ms"] = _duration_ms(job.get("started_at"), job.get("completed_at")) or 0
             job["updated_at"] = _now_iso()
             _persist_jobs_locked()
             return _to_response(job)
@@ -199,6 +247,8 @@ def mark_ingest_job_canceled(job_id: str, message: str) -> IngestJobResponse:
         job["status"] = "canceled"
         job["message"] = message
         job["cancel_requested"] = False
+        job["completed_at"] = _now_iso()
+        job["duration_ms"] = _duration_ms(job.get("started_at"), job.get("completed_at")) or 0
         job["updated_at"] = _now_iso()
         _persist_jobs_locked()
         return _to_response(job)
@@ -238,6 +288,7 @@ def get_ingest_job_execution_params(job_id: str) -> dict:
             "file_name": job["file_name"],
             "knowledge_base": job["knowledge_base"],
             "source_path": job["source_path"],
+            "parser_backend": job.get("parser_backend", "unknown"),
             "parse_method": job.get("parse_method"),
             "reset": bool(job.get("reset", False)),
             "page": job.get("page"),

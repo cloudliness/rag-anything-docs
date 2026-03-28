@@ -260,7 +260,7 @@ export function App() {
       {errorMessage ? <p>Load error: {errorMessage}</p> : null}
 
       <div style={{ display: "grid", gap: "1rem" }}>
-        <DashboardPage capabilities={capabilities} health={health} knowledgeBaseCount={knowledgeBases.length} />
+        <DashboardPage capabilities={capabilities} health={health} knowledgeBaseCount={knowledgeBases.length} recentUploadJobs={recentUploadJobs} />
         <KnowledgeBasesPage
           capabilities={capabilities}
           documents={documents}

@@ -45,8 +45,17 @@ export type IngestJob = {
   message: string;
   knowledge_base: string;
   file_name: string;
+  parser_backend: string;
+  parse_method?: string | null;
+  requested_page?: number | null;
+  requested_start_page?: number | null;
+  requested_end_page?: number | null;
+  requested_page_count?: number | null;
   created_at: string;
   updated_at: string;
+  started_at?: string | null;
+  completed_at?: string | null;
+  duration_ms?: number | null;
   result?: DocumentRecord | null;
   error?: string | null;
   retry_of?: string | null;

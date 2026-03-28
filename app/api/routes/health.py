@@ -8,7 +8,7 @@ router = APIRouter(prefix="/api/health", tags=["health"])
 
 @router.get("", response_model=HealthResponse)
 async def health() -> HealthResponse:
-    return HealthResponse(status="ok", version="0.4.0")
+    return HealthResponse(status="ok", version="0.5.0")
 
 
 @router.get("/dependencies", response_model=DependencyHealthResponse)

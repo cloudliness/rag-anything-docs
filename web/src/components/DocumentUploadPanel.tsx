@@ -40,6 +40,29 @@ export function DocumentUploadPanel(props: DocumentUploadPanelProps) {
     return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
   }
 
+  function formatDuration(durationMs?: number | null) {
+    if (durationMs == null) {
+      return "n/a";
+    }
+    if (durationMs < 1000) {
+      return `${durationMs} ms`;
+    }
+    return `${(durationMs / 1000).toFixed(1)} s`;
+  }
+
+  function formatRequestedPages(job: IngestJob) {
+    if (job.requested_page != null) {
+      return `page ${job.requested_page}`;
+    }
+    if (job.requested_start_page != null && job.requested_end_page != null) {
+      return `pages ${job.requested_start_page}-${job.requested_end_page}`;
+    }
+    if (job.requested_start_page != null) {
+      return `from page ${job.requested_start_page}`;
+    }
+    return "all pages";
+  }
+
   async function handleRetryAction(jobId: string) {
     setMessage(null);
     setErrorMessage(null);
@@ -162,6 +185,9 @@ export function DocumentUploadPanel(props: DocumentUploadPanelProps) {
           <div style={{ color: "#52606d", fontSize: "0.92rem" }}>
             {props.currentUploadJob.file_name} in {props.currentUploadJob.knowledge_base}: {props.currentUploadJob.message}
           </div>
+          <div style={{ color: "#52606d", fontSize: "0.88rem" }}>
+            Parser {props.currentUploadJob.parser_backend} / {props.currentUploadJob.parse_method ?? "auto"} | {formatRequestedPages(props.currentUploadJob)} | duration {formatDuration(props.currentUploadJob.duration_ms)}
+          </div>
           <div style={{ display: "flex", gap: "0.6rem" }}>
             <button
               disabled={!props.currentUploadJob.can_cancel}
@@ -194,6 +220,9 @@ export function DocumentUploadPanel(props: DocumentUploadPanelProps) {
                     <div style={{ fontWeight: 700 }}>{job.file_name}</div>
                     <div style={{ color: "#55616c", fontSize: "0.92rem", marginTop: "0.2rem" }}>
                       {job.knowledge_base} | {job.status} | updated {formatTimestamp(job.updated_at)}
+                    </div>
+                    <div style={{ color: "#55616c", fontSize: "0.88rem", marginTop: "0.25rem" }}>
+                      {job.parser_backend}/{job.parse_method ?? "auto"} | {formatRequestedPages(job)} | duration {formatDuration(job.duration_ms)}
                     </div>
                     <div style={{ color: "#52606d", fontSize: "0.92rem", marginTop: "0.35rem" }}>{job.message}</div>
                     {job.error ? <div style={{ color: "#9f1f1f", fontSize: "0.92rem", marginTop: "0.35rem" }}>{job.error}</div> : null}
