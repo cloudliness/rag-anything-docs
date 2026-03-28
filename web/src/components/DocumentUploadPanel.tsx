@@ -1,12 +1,16 @@
 import { useRef, useState } from "react";
 
-import type { BrowserUploadPayload } from "../types";
+import type { BrowserUploadPayload, IngestJob } from "../types";
 
 
 type DocumentUploadPanelProps = {
   selectedKnowledgeBase: string | null;
   onUpload: (payload: BrowserUploadPayload) => Promise<void>;
+  onRetryUpload: (jobId: string) => Promise<void>;
+  onCancelUpload: (jobId: string) => Promise<void>;
   isUploading: boolean;
+  currentUploadJob: IngestJob | null;
+  recentUploadJobs: IngestJob[];
 };
 
 
@@ -30,6 +34,35 @@ export function DocumentUploadPanel(props: DocumentUploadPanelProps) {
   const [reset, setReset] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  function formatTimestamp(value: string) {
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
+  }
+
+  async function handleRetryAction(jobId: string) {
+    setMessage(null);
+    setErrorMessage(null);
+
+    try {
+      await props.onRetryUpload(jobId);
+      setMessage("Retry started and completed successfully.");
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Retry failed");
+    }
+  }
+
+  async function handleCancelAction(jobId: string) {
+    setMessage(null);
+    setErrorMessage(null);
+
+    try {
+      await props.onCancelUpload(jobId);
+      setMessage("Cancellation request sent.");
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Cancel failed");
+    }
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -114,8 +147,83 @@ export function DocumentUploadPanel(props: DocumentUploadPanelProps) {
       </label>
 
       <button disabled={props.isUploading} style={primaryButtonStyle} type="submit">
-        {props.isUploading ? "Uploading..." : "Upload Document"}
+        {props.isUploading ? "Processing Upload..." : "Upload Document"}
       </button>
+
+      {props.currentUploadJob ? (
+        <div style={jobPanelStyle}>
+          <div style={{ alignItems: "center", display: "flex", justifyContent: "space-between" }}>
+            <strong>Ingest job</strong>
+            <span>{props.currentUploadJob.progress}%</span>
+          </div>
+          <div style={jobBarTrackStyle}>
+            <div style={{ ...jobBarFillStyle, width: `${props.currentUploadJob.progress}%` }} />
+          </div>
+          <div style={{ color: "#52606d", fontSize: "0.92rem" }}>
+            {props.currentUploadJob.file_name} in {props.currentUploadJob.knowledge_base}: {props.currentUploadJob.message}
+          </div>
+          <div style={{ display: "flex", gap: "0.6rem" }}>
+            <button
+              disabled={!props.currentUploadJob.can_cancel}
+              onClick={() => void handleCancelAction(props.currentUploadJob!.job_id)}
+              style={secondaryButtonStyle}
+              type="button"
+            >
+              Cancel Job
+            </button>
+            <button
+              disabled={!props.currentUploadJob.can_retry || props.isUploading}
+              onClick={() => void handleRetryAction(props.currentUploadJob!.job_id)}
+              style={secondaryButtonStyle}
+              type="button"
+            >
+              Retry Job
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {props.recentUploadJobs.length > 0 ? (
+        <div style={historyPanelStyle}>
+          <h3 style={{ margin: 0 }}>Recent Ingest Jobs</h3>
+          <div style={{ display: "grid", gap: "0.75rem" }}>
+            {props.recentUploadJobs.map((job) => (
+              <div key={job.job_id} style={historyItemStyle}>
+                <div style={{ alignItems: "start", display: "flex", justifyContent: "space-between", gap: "1rem" }}>
+                  <div>
+                    <div style={{ fontWeight: 700 }}>{job.file_name}</div>
+                    <div style={{ color: "#55616c", fontSize: "0.92rem", marginTop: "0.2rem" }}>
+                      {job.knowledge_base} | {job.status} | updated {formatTimestamp(job.updated_at)}
+                    </div>
+                    <div style={{ color: "#52606d", fontSize: "0.92rem", marginTop: "0.35rem" }}>{job.message}</div>
+                    {job.error ? <div style={{ color: "#9f1f1f", fontSize: "0.92rem", marginTop: "0.35rem" }}>{job.error}</div> : null}
+                    {job.retry_of ? <div style={{ color: "#52606d", fontSize: "0.86rem", marginTop: "0.25rem" }}>Retry of {job.retry_of}</div> : null}
+                  </div>
+                  <div style={{ display: "grid", gap: "0.5rem", minWidth: "126px" }}>
+                    <div style={statusPillStyle}>{job.progress}%</div>
+                    <button
+                      disabled={!job.can_cancel}
+                      onClick={() => void handleCancelAction(job.job_id)}
+                      style={secondaryButtonStyle}
+                      type="button"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      disabled={!job.can_retry || props.isUploading}
+                      onClick={() => void handleRetryAction(job.job_id)}
+                      style={secondaryButtonStyle}
+                      type="button"
+                    >
+                      Retry
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
 
       {message ? <div style={{ color: "#125c2e" }}>{message}</div> : null}
       {errorMessage ? <div style={{ color: "#9f1f1f" }}>{errorMessage}</div> : null}
@@ -140,4 +248,67 @@ const primaryButtonStyle = {
   cursor: "pointer",
   fontWeight: 700,
   padding: "0.8rem 1rem",
+};
+
+
+const jobPanelStyle = {
+  background: "#eef5f8",
+  border: "1px solid #cad7df",
+  borderRadius: "12px",
+  display: "grid",
+  gap: "0.6rem",
+  padding: "0.85rem 0.95rem",
+};
+
+
+const jobBarTrackStyle = {
+  background: "#d7e0e7",
+  borderRadius: "999px",
+  height: "10px",
+  overflow: "hidden",
+};
+
+
+const jobBarFillStyle = {
+  background: "#133b5c",
+  height: "100%",
+  transition: "width 180ms ease",
+};
+
+
+const historyPanelStyle = {
+  borderTop: "1px solid #d7e0e7",
+  display: "grid",
+  gap: "0.85rem",
+  paddingTop: "0.25rem",
+};
+
+
+const historyItemStyle = {
+  background: "#fbfdfe",
+  border: "1px solid #d7e0e7",
+  borderRadius: "12px",
+  padding: "0.85rem 0.95rem",
+};
+
+
+const statusPillStyle = {
+  background: "#edf4f7",
+  border: "1px solid #cad7df",
+  borderRadius: "999px",
+  color: "#234257",
+  fontSize: "0.86rem",
+  padding: "0.35rem 0.7rem",
+  textAlign: "center" as const,
+};
+
+
+const secondaryButtonStyle = {
+  background: "#ffffff",
+  border: "1px solid #cad7df",
+  borderRadius: "999px",
+  color: "#173042",
+  cursor: "pointer",
+  fontWeight: 600,
+  padding: "0.55rem 0.75rem",
 };

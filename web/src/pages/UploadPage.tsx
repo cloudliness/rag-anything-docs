@@ -1,12 +1,16 @@
 import { DocumentUploadPanel } from "../components/DocumentUploadPanel";
-import type { BrowserUploadPayload, CapabilityResponse } from "../types";
+import type { BrowserUploadPayload, CapabilityResponse, IngestJob } from "../types";
 
 
 type UploadPageProps = {
   selectedKnowledgeBase: string | null;
   onUpload: (payload: BrowserUploadPayload) => Promise<void>;
+  onRetryUpload: (jobId: string) => Promise<void>;
+  onCancelUpload: (jobId: string) => Promise<void>;
   isUploading: boolean;
   capabilities: CapabilityResponse | null;
+  currentUploadJob: IngestJob | null;
+  recentUploadJobs: IngestJob[];
 };
 
 
@@ -19,12 +23,16 @@ export function UploadPage(props: UploadPageProps) {
       </p>
       {props.capabilities ? (
         <div style={noticeStyle}>
-          Current limit: {props.capabilities.max_upload_target_kbs} KB per upload. Browser upload: {props.capabilities.browser_upload_enabled ? "enabled" : "disabled"}. Multi-KB ingest status: {props.capabilities.multi_kb_upload_status}.
+          Current limit: {props.capabilities.max_upload_target_kbs} KB per upload. Browser upload: {props.capabilities.browser_upload_enabled ? "enabled" : "disabled"}. Multi-KB ingest status: {props.capabilities.multi_kb_upload_status}. Background ingest: {props.capabilities.background_ingest_status}.
         </div>
       ) : null}
       <DocumentUploadPanel
+        currentUploadJob={props.currentUploadJob}
         isUploading={props.isUploading}
+        onCancelUpload={props.onCancelUpload}
+        onRetryUpload={props.onRetryUpload}
         onUpload={props.onUpload}
+        recentUploadJobs={props.recentUploadJobs}
         selectedKnowledgeBase={props.selectedKnowledgeBase}
       />
     </section>

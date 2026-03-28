@@ -1,7 +1,12 @@
-import { useState } from "react";
+import { Suspense, lazy, useState } from "react";
 
-import { AnswerView } from "../components/AnswerView";
 import type { CapabilityResponse, KnowledgeBase, QueryPayload, QueryResponse } from "../types";
+
+
+const AnswerView = lazy(async () => {
+  const module = await import("../components/AnswerView");
+  return { default: module.AnswerView };
+});
 
 
 type QueryPageProps = {
@@ -115,7 +120,9 @@ export function QueryPage(props: QueryPageProps) {
       {errorMessage ? <div style={{ color: "#9f1f1f", marginTop: "0.9rem" }}>{errorMessage}</div> : null}
       {answer ? (
         <div style={{ marginTop: "1rem" }}>
-          <AnswerView answer={answer.answer} citations={answer.citations} />
+          <Suspense fallback={<div style={{ color: "#52606d" }}>Loading answer renderer...</div>}>
+            <AnswerView answer={answer.answer} citations={answer.citations} />
+          </Suspense>
         </div>
       ) : null}
     </section>

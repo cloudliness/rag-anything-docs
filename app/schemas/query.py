@@ -13,6 +13,7 @@ class Citation(BaseModel):
     document: str
     page: int | None = None
     snippet: str
+    chunk_id: str | None = None
 
 
 class QueryResponse(BaseModel):

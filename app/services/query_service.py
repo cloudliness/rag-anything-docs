@@ -126,6 +126,93 @@ def _load_parse_cache(kb_name: str) -> dict:
         return {}
 
 
+def _load_text_chunks(kb_name: str) -> dict:
+    text_chunks_path = _repo_root() / "knowledge_bases" / kb_name / "storage" / "kv_store_text_chunks.json"
+    if not text_chunks_path.exists():
+        return {}
+    try:
+        with text_chunks_path.open("r", encoding="utf-8") as handle:
+            return json.load(handle)
+    except (json.JSONDecodeError, OSError):
+        return {}
+
+
+def _normalize_text(value: str) -> str:
+    return re.sub(r"\s+", " ", value).strip().lower()
+
+
+def _score_overlap(query: str, content: str) -> int:
+    query_terms = {term for term in re.findall(r"[a-zA-Z0-9]+", query.lower()) if len(term) >= 3}
+    if not query_terms:
+        return 0
+    content_terms = re.findall(r"[a-zA-Z0-9]+", content.lower())
+    return sum(1 for term in content_terms if term in query_terms)
+
+
+def _best_page_for_chunk(doc_id: str, chunk_content: str, parse_cache: dict) -> int | None:
+    normalized_chunk_content = _normalize_text(chunk_content)
+    best_score = -1
+    best_page: int | None = None
+
+    for entry in parse_cache.values():
+        if entry.get("doc_id") != doc_id:
+            continue
+        for item in entry.get("content_list", []):
+            item_text = str(item.get("text", "")).strip()
+            if not item_text:
+                continue
+            normalized_item_text = _normalize_text(item_text)
+            if normalized_item_text and normalized_item_text in normalized_chunk_content:
+                try:
+                    return int(item.get("page_idx")) + 1
+                except (TypeError, ValueError):
+                    return None
+            score = _score_overlap(normalized_chunk_content, item_text)
+            if score > best_score:
+                best_score = score
+                try:
+                    best_page = int(item.get("page_idx")) + 1
+                except (TypeError, ValueError):
+                    best_page = None
+
+    return best_page
+
+
+def _excerpt(text: str, limit: int = 320) -> str:
+    compact = re.sub(r"\s+", " ", text).strip()
+    if len(compact) <= limit:
+        return compact
+    return f"{compact[:limit].rstrip()}..."
+
+
+def _chunk_backed_citations(question: str, kb_name: str, doc_id: str, doc_record: dict, text_chunks: dict, parse_cache: dict) -> list[Citation]:
+    chunk_candidates: list[tuple[int, str, dict]] = []
+    for chunk_id in doc_record.get("chunks_list", []):
+        chunk = text_chunks.get(chunk_id)
+        if not chunk:
+            continue
+        score = _score_overlap(question, str(chunk.get("content", "")))
+        chunk_candidates.append((score, chunk_id, chunk))
+
+    chunk_candidates.sort(key=lambda item: item[0], reverse=True)
+    selected_chunks = chunk_candidates[:2] if chunk_candidates else []
+    citations: list[Citation] = []
+
+    for _, chunk_id, chunk in selected_chunks:
+        chunk_content = str(chunk.get("content", "")).strip()
+        citations.append(
+            Citation(
+                kb=kb_name,
+                document=str(doc_record.get("file_path", "unknown")),
+                page=_best_page_for_chunk(doc_id, chunk_content, parse_cache),
+                snippet=_excerpt(chunk_content),
+                chunk_id=chunk_id,
+            )
+        )
+
+    return citations
+
+
 def _page_number_from_content_list(content_list: list[dict]) -> int | None:
     for item in content_list:
         if item.get("type") == "page_number":
@@ -141,45 +228,48 @@ def _page_number_from_content_list(content_list: list[dict]) -> int | None:
     return None
 
 
-def _citations_from_answer(kb_name: str, answer: str) -> list[Citation]:
+def _citations_from_answer(question: str, kb_name: str, answer: str) -> list[Citation]:
     doc_status_map = _load_doc_status_map(kb_name)
     parse_cache = _load_parse_cache(kb_name)
+    text_chunks = _load_text_chunks(kb_name)
     references = _extract_reference_documents(answer)
-    if not references:
-        return []
-
     citations: list[Citation] = []
-    for reference in references:
-        matched_doc = None
-        for item in doc_status_map.values():
-            if item.get("file_path") == reference:
-                matched_doc = item
+
+    if references:
+        for reference in references:
+            matched_doc_id = None
+            matched_doc = None
+            for doc_id, item in doc_status_map.items():
+                if item.get("file_path") == reference:
+                    matched_doc_id = doc_id
+                    matched_doc = item
+                    break
+
+            if matched_doc is None or matched_doc_id is None:
+                continue
+
+            chunk_citations = _chunk_backed_citations(question, kb_name, matched_doc_id, matched_doc, text_chunks, parse_cache)
+            if chunk_citations:
+                citations.extend(chunk_citations)
                 break
 
-        snippet = None
-        page = None
-        if matched_doc is not None:
-            snippet = matched_doc.get("content_summary")
+    if citations:
+        return citations
 
-        for entry in parse_cache.values():
-            if entry.get("doc_id") and matched_doc is not None and entry.get("doc_id") == next((key for key, value in doc_status_map.items() if value is matched_doc), None):
-                content_list = entry.get("content_list", [])
-                page = _page_number_from_content_list(content_list)
-                if not snippet:
-                    for item in content_list:
-                        if item.get("type") == "text" and item.get("text"):
-                            snippet = str(item["text"]).strip()
-                            break
-                break
+    scored_docs: list[tuple[int, str, dict]] = []
+    for doc_id, doc_record in doc_status_map.items():
+        score = 0
+        for chunk_id in doc_record.get("chunks_list", []):
+            chunk = text_chunks.get(chunk_id)
+            if not chunk:
+                continue
+            score = max(score, _score_overlap(question, str(chunk.get("content", ""))))
+        scored_docs.append((score, doc_id, doc_record))
 
-        citations.append(
-            Citation(
-                kb=kb_name,
-                document=reference,
-                page=page,
-                snippet=snippet or "Source document matched from the query reference list.",
-            )
-        )
+    scored_docs.sort(key=lambda item: item[0], reverse=True)
+    for _, doc_id, doc_record in scored_docs[:2]:
+        citations.extend(_chunk_backed_citations(question, kb_name, doc_id, doc_record, text_chunks, parse_cache))
+
     return citations
 
 
@@ -209,7 +299,7 @@ async def _run_query_for_kb(kb_name: str, question: str, query_mode: str) -> dic
     return {
         "kb_name": kb_name,
         "answer": answer.strip(),
-        "citations": _citations_from_answer(kb_name, answer),
+        "citations": _citations_from_answer(question, kb_name, answer),
     }
 
 

@@ -3,6 +3,7 @@ export type Citation = {
   document: string;
   page?: number;
   snippet: string;
+  chunk_id?: string;
 };
 
 export type HealthResponse = {
@@ -15,6 +16,7 @@ export type CapabilityResponse = {
   max_upload_target_kbs: number;
   multi_kb_query_status: string;
   multi_kb_upload_status: string;
+  background_ingest_status: string;
   kb_creation_enabled: boolean;
   path_upload_enabled: boolean;
   browser_upload_enabled: boolean;
@@ -34,6 +36,23 @@ export type DocumentRecord = {
   knowledge_base: string;
   status: string;
   parsed_output_path?: string | null;
+};
+
+export type IngestJob = {
+  job_id: string;
+  status: string;
+  progress: number;
+  message: string;
+  knowledge_base: string;
+  file_name: string;
+  created_at: string;
+  updated_at: string;
+  result?: DocumentRecord | null;
+  error?: string | null;
+  retry_of?: string | null;
+  cancel_requested: boolean;
+  can_retry: boolean;
+  can_cancel: boolean;
 };
 
 export type UploadDocumentPayload = {

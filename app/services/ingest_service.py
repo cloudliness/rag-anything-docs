@@ -2,16 +2,31 @@ import os
 import re
 import shutil
 import sys
+from collections.abc import Callable
 from pathlib import Path
 from uuid import uuid4
 
 from dotenv import load_dotenv
-from fastapi import HTTPException, UploadFile
+from fastapi import BackgroundTasks, HTTPException, UploadFile
 from lightrag.llm.openai import openai_complete_if_cache, openai_embed
 from lightrag.utils import EmbeddingFunc
 
 from app.schemas.document import DocumentResponse, UploadDocumentRequest
+from app.services.ingest_jobs import (
+    complete_ingest_job,
+    create_ingest_job,
+    fail_ingest_job,
+    get_ingest_job,
+    get_ingest_job_execution_params,
+    is_cancel_requested,
+    mark_ingest_job_canceled,
+    update_ingest_job,
+)
 from raganything import RAGAnything, RAGAnythingConfig
+
+
+class IngestJobCanceledError(Exception):
+    pass
 
 
 def _repo_root() -> Path:
@@ -175,6 +190,16 @@ def _persist_uploaded_file(upload_file: UploadFile, kb_name: str) -> Path:
     return destination
 
 
+def _report_progress(progress_callback: Callable[[int, str], None] | None, progress: int, message: str) -> None:
+    if progress_callback is not None:
+        progress_callback(progress, message)
+
+
+def _raise_if_job_canceled(job_id: str, message: str) -> None:
+    if is_cancel_requested(job_id):
+        raise IngestJobCanceledError(message)
+
+
 async def _process_document(
     *,
     source_path: Path,
@@ -185,12 +210,16 @@ async def _process_document(
     start_page: int | None,
     end_page: int | None,
     display_name: str | None = None,
+    progress_callback: Callable[[int, str], None] | None = None,
 ) -> DocumentResponse:
+    _report_progress(progress_callback, 10, "Validating document options.")
     start_page_value, end_page_value = _resolve_page_bounds(page, start_page, end_page)
     kb_paths = _kb_paths(kb_name)
     if reset:
+        _report_progress(progress_callback, 20, "Resetting existing knowledge base storage.")
         _reset_knowledge_base(kb_paths)
 
+    _report_progress(progress_callback, 35, "Preparing retrieval engine.")
     rag = _create_rag(kb_name)
     kb_paths["output"].mkdir(parents=True, exist_ok=True)
     parser_kwargs = {}
@@ -199,12 +228,15 @@ async def _process_document(
     if end_page_value is not None:
         parser_kwargs["end_page"] = end_page_value
 
+    _report_progress(progress_callback, 60, "Parsing and indexing document content.")
     await rag.process_document_complete(
         file_path=str(source_path),
         output_dir=str(kb_paths["output"]),
         parse_method=parse_method or os.getenv("PARSE_METHOD", "auto"),
         **parser_kwargs,
     )
+
+    _report_progress(progress_callback, 90, "Finalizing ingest metadata.")
 
     return DocumentResponse(
         file_name=display_name or source_path.name,
@@ -236,7 +268,6 @@ async def upload_document(payload: UploadDocumentRequest) -> DocumentResponse:
         end_page=payload.end_page,
     )
 
-    
 
 async def upload_browser_file(
     *,
@@ -264,3 +295,141 @@ async def upload_browser_file(
         end_page=end_page,
         display_name=file.filename,
     )
+
+
+async def _run_browser_upload_job(
+    *,
+    job_id: str,
+    source_path: Path,
+    file_name: str,
+    knowledge_base: str,
+    parse_method: str | None,
+    reset: bool,
+    page: int | None,
+    start_page: int | None,
+    end_page: int | None,
+) -> None:
+    try:
+        _raise_if_job_canceled(job_id, "Ingest job canceled before processing started.")
+        update_ingest_job(job_id, status="running", progress=5, message="Background ingest started.")
+        _raise_if_job_canceled(job_id, "Ingest job canceled before parsing started.")
+        result = await _process_document(
+            source_path=source_path,
+            kb_name=knowledge_base,
+            parse_method=parse_method,
+            reset=reset,
+            page=page,
+            start_page=start_page,
+            end_page=end_page,
+            display_name=file_name,
+            progress_callback=lambda progress, message: update_ingest_job(job_id, status="running", progress=progress, message=message),
+        )
+        complete_ingest_job(job_id, result)
+    except IngestJobCanceledError as exc:
+        mark_ingest_job_canceled(job_id, str(exc))
+    except Exception as exc:
+        fail_ingest_job(job_id, str(exc))
+
+
+def _schedule_upload_job(
+    *,
+    background_tasks: BackgroundTasks,
+    job_id: str,
+    source_path: Path,
+    file_name: str,
+    knowledge_base: str,
+    parse_method: str | None,
+    reset: bool,
+    page: int | None,
+    start_page: int | None,
+    end_page: int | None,
+) -> None:
+    background_tasks.add_task(
+        _run_browser_upload_job,
+        job_id=job_id,
+        source_path=source_path,
+        file_name=file_name,
+        knowledge_base=knowledge_base,
+        parse_method=parse_method,
+        reset=reset,
+        page=page,
+        start_page=start_page,
+        end_page=end_page,
+    )
+
+
+async def create_browser_upload_job(
+    *,
+    background_tasks: BackgroundTasks,
+    file: UploadFile,
+    knowledge_base: str,
+    parse_method: str | None,
+    reset: bool,
+    page: int | None,
+    start_page: int | None,
+    end_page: int | None,
+):
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="A file must be provided")
+
+    _load_environment()
+    kb_name = _normalize_kb_name(knowledge_base)
+    persisted_path = _persist_uploaded_file(file, kb_name)
+    job = create_ingest_job(
+        file_name=file.filename,
+        knowledge_base=kb_name,
+        source_path=str(persisted_path),
+        parse_method=parse_method,
+        reset=reset,
+        page=page,
+        start_page=start_page,
+        end_page=end_page,
+    )
+    update_ingest_job(job.job_id, status="queued", progress=5, message="Upload received and queued for ingest.")
+    _schedule_upload_job(
+        background_tasks=background_tasks,
+        job_id=job.job_id,
+        source_path=persisted_path,
+        file_name=file.filename,
+        knowledge_base=kb_name,
+        parse_method=parse_method,
+        reset=reset,
+        page=page,
+        start_page=start_page,
+        end_page=end_page,
+    )
+    return get_ingest_job(job.job_id)
+
+
+async def create_retry_upload_job(*, background_tasks: BackgroundTasks, job_id: str):
+    _load_environment()
+    params = get_ingest_job_execution_params(job_id)
+    source_path = Path(params["source_path"]).expanduser().resolve()
+    if not source_path.exists():
+        raise HTTPException(status_code=404, detail=f"Retry source file not found: {source_path}")
+
+    job = create_ingest_job(
+        file_name=params["file_name"],
+        knowledge_base=params["knowledge_base"],
+        source_path=str(source_path),
+        parse_method=params["parse_method"],
+        reset=bool(params["reset"]),
+        page=params["page"],
+        start_page=params["start_page"],
+        end_page=params["end_page"],
+        retry_of=job_id,
+    )
+    update_ingest_job(job.job_id, status="queued", progress=5, message="Retry queued for ingest.")
+    _schedule_upload_job(
+        background_tasks=background_tasks,
+        job_id=job.job_id,
+        source_path=source_path,
+        file_name=params["file_name"],
+        knowledge_base=params["knowledge_base"],
+        parse_method=params["parse_method"],
+        reset=bool(params["reset"]),
+        page=params["page"],
+        start_page=params["start_page"],
+        end_page=params["end_page"],
+    )
+    return get_ingest_job(job.job_id)

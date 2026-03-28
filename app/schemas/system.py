@@ -18,6 +18,7 @@ class CapabilityResponse(BaseModel):
     max_upload_target_kbs: int
     multi_kb_query_status: str
     multi_kb_upload_status: str
+    background_ingest_status: str
     kb_creation_enabled: bool
     path_upload_enabled: bool
     browser_upload_enabled: bool

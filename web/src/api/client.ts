@@ -4,6 +4,7 @@ import type {
   CreateKnowledgeBasePayload,
   DocumentRecord,
   HealthResponse,
+  IngestJob,
   KnowledgeBase,
   QueryPayload,
   QueryResponse,
@@ -98,6 +99,63 @@ export async function uploadBrowserFile(payload: BrowserUploadPayload) {
   }
 
   return response.json() as Promise<DocumentRecord>;
+}
+
+
+export async function startBrowserUploadJob(payload: BrowserUploadPayload) {
+  const formData = new FormData();
+  formData.append("file", payload.file);
+  formData.append("knowledge_base", payload.knowledge_base);
+  formData.append("reset", String(payload.reset ?? false));
+
+  if (payload.parse_method) {
+    formData.append("parse_method", payload.parse_method);
+  }
+  if (payload.page != null) {
+    formData.append("page", String(payload.page));
+  }
+  if (payload.start_page != null) {
+    formData.append("start_page", String(payload.start_page));
+  }
+  if (payload.end_page != null) {
+    formData.append("end_page", String(payload.end_page));
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/documents/upload-jobs`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || `Request failed with status ${response.status}`);
+  }
+
+  return response.json() as Promise<IngestJob>;
+}
+
+
+export function getIngestJob(jobId: string) {
+  return requestJson<IngestJob>(`/api/documents/jobs/${encodeURIComponent(jobId)}`);
+}
+
+
+export function getIngestJobs(limit = 25) {
+  return requestJson<IngestJob[]>(`/api/documents/jobs?limit=${encodeURIComponent(String(limit))}`);
+}
+
+
+export function cancelIngestJob(jobId: string) {
+  return requestJson<IngestJob>(`/api/documents/jobs/${encodeURIComponent(jobId)}/cancel`, {
+    method: "POST",
+  });
+}
+
+
+export function retryIngestJob(jobId: string) {
+  return requestJson<IngestJob>(`/api/documents/jobs/${encodeURIComponent(jobId)}/retry`, {
+    method: "POST",
+  });
 }
 
 

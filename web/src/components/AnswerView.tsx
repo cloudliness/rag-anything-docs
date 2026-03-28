@@ -1,3 +1,5 @@
+import "katex/dist/katex.min.css";
+
 import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
@@ -48,6 +50,7 @@ export function AnswerView(props: AnswerViewProps) {
                 </div>
                 <div style={{ color: "#55616c", fontSize: "0.92rem", marginTop: "0.15rem" }}>
                   KB: {citation.kb}
+                  {citation.chunk_id ? ` | chunk ${citation.chunk_id}` : ""}
                 </div>
                 <div style={{ marginTop: "0.55rem" }}>{citation.snippet}</div>
               </li>
