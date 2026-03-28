@@ -1,0 +1,42 @@
+{
+  "doc-99f8c5f04443c9bb2a27180a8dccb0af": {
+    "entity_names": [
+      "Section 2.1–2.3",
+      "Natural Numbers",
+      "Backward Difference Operator",
+      "Yamaguchis Q-Analogue",
+      "Gospers Identity",
+      "Complex Number",
+      "Generalized Hypergeometric Series",
+      "Abel Lemma",
+      "Sequence Tau N",
+      "Baileys Classic Text",
+      "Q-Analogue",
+      "Gosper",
+      "Campbell",
+      "Forward Difference Operator",
+      "Shifted Factorial",
+      "Section 1.1",
+      "Cantarini",
+      "Yamaguchi",
+      "Q-Shifted Factorial",
+      "Bailey",
+      "Chu",
+      "Modified Abel Lemma",
+      "Summation Lemma",
+      "Technique",
+      "Generalized Hypergeometric Series Definition (Classical Form) (equation)",
+      "q-Shifted Factorial Definition (equation)",
+      "Basic q-Hypergeometric $_r\\phi_{r-1}$ Series Definition (equation)",
+      "Basic Hypergeometric Series Term Definition (equation)",
+      "Infinite q-Product Ratio Notation (equation)",
+      "Modified Abel Lemma on Summation by Parts (equation)",
+      "A FURTHER q-ANALOGUE OF GOSPER'S STRANGE SERIES (header)",
+      "Section 2 Header (page_number)"
+    ],
+    "count": 32,
+    "create_time": 1774690324,
+    "update_time": 1774690536,
+    "_id": "doc-99f8c5f04443c9bb2a27180a8dccb0af"
+  }
+}

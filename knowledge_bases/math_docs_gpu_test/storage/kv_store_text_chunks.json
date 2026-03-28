@@ -1,0 +1,16 @@
+{
+  "chunk-90fca6d9f1f9b0dbe01302d6bf68c233": {
+    "tokens": 624,
+    "content": "technique given by Campbell and Cantarini [5] and relying on a modified Abel lemma, we obtain a simplified proof of Yamaguchi’s $q$ -analogue, together with a new $q$ -analogue of Gosper’s identity that is inequivalent to Yamaguchi’s $q$ -analogue. We also show how a similar approach can be applied much more broadly in the construction of $q$ -analogues, as in Sections 2.1–2.3 below. \n\n1.1. Preliminaries. The shifted factorial is such that $( x ) _ { 0 } = 1$ and $( x ) _ { n } = x ( x + 1 ) \\cdots ( x + n - 1 )$ for positive integers n. Generalized hypergeometric series may then be defined so that \n\nreferring to Bailey’s classic text for background [3]. \n\nFor $| q | < 1$ , we recall the standard notation for $q$ -shifted factorials. For a complex number $a$ , the $q$ -shifted factorial is defined by \n\nWe thus obtain a q-analogue of the shifted factorial in the sense that limq→1 (qa;q)n(1−q) n $q$ $\\begin{array} { r } { \\operatorname* { l i m } _ { q \\to 1 } \\frac { ( q ^ { a } ; q ) _ { n } } { ( 1 - q ) ^ { n } } = ( a ) _ { n } } \\end{array}$ . Basic hypergeometric series of the form ${ } _ { r } \\phi _ { r - 1 }$ may then be defined so that \n\nwhere it is assumed that $| q | < 1$ . For brevity, we also write \n\nand \n\nFor a sequence $\\left( \\tau _ { n } : n \\in \\mathbb { N } _ { 0 } \\right)$ , define the backward difference operator $\\nabla$ and the forward difference operator $\\Delta$ so that $\\nabla \\tau _ { n } = \\tau _ { n } - \\tau _ { n - 1 }$ and $\\Delta \\tau _ { n } = \\tau _ { n } - \\tau _ { n + 1 }$ . Being consistent with a number of research contributions from Chu et al. [8, 10, 11, 12] that have inspired our work, we let the relation \n\nbe referred to as the modified Abel lemma on summation by parts, with the assumption that the above limit exists and that the one of the two series in (3) converges. The summation lemma in (3) together with a $q$ -version of a technique (reviewed below) based on this lemma due to Campbell and Cantarini [5] provide the keys to our main results given in Section 2 below.",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-99f8c5f04443c9bb2a27180a8dccb0af",
+    "file_path": "math1.pdf",
+    "llm_cache_list": [
+      "default:extract:a4700a2f0305f18dd8586c12bb08af8d",
+      "default:extract:dd4c99e9d58a091b5a81c061d0c065a4"
+    ],
+    "create_time": 1774690131,
+    "update_time": 1774690321,
+    "_id": "chunk-90fca6d9f1f9b0dbe01302d6bf68c233"
+  }
+}

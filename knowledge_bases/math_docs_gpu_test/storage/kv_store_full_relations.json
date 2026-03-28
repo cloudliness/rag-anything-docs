@@ -1,0 +1,94 @@
+{
+  "doc-99f8c5f04443c9bb2a27180a8dccb0af": {
+    "relation_pairs": [
+      [
+        "Bailey",
+        "Baileys Classic Text"
+      ],
+      [
+        "Yamaguchi",
+        "Yamaguchis Q-Analogue"
+      ],
+      [
+        "Campbell",
+        "Yamaguchis Q-Analogue"
+      ],
+      [
+        "Q-Shifted Factorial",
+        "Shifted Factorial"
+      ],
+      [
+        "Chu",
+        "Modified Abel Lemma"
+      ],
+      [
+        "Abel Lemma",
+        "Cantarini"
+      ],
+      [
+        "Forward Difference Operator",
+        "Section 1.1"
+      ],
+      [
+        "Cantarini",
+        "Yamaguchis Q-Analogue"
+      ],
+      [
+        "Gosper",
+        "Gospers Identity"
+      ],
+      [
+        "Modified Abel Lemma",
+        "Technique"
+      ],
+      [
+        "Gospers Identity",
+        "Yamaguchis Q-Analogue"
+      ],
+      [
+        "Campbell",
+        "Gospers Identity"
+      ],
+      [
+        "Q-Shifted Factorial",
+        "Section 1.1"
+      ],
+      [
+        "Q-Analogue",
+        "Section 2.1–2.3"
+      ],
+      [
+        "Bailey",
+        "Generalized Hypergeometric Series"
+      ],
+      [
+        "Cantarini",
+        "Gospers Identity"
+      ],
+      [
+        "Abel Lemma",
+        "Campbell"
+      ],
+      [
+        "Backward Difference Operator",
+        "Forward Difference Operator"
+      ],
+      [
+        "Backward Difference Operator",
+        "Section 1.1"
+      ],
+      [
+        "Generalized Hypergeometric Series",
+        "Section 1.1"
+      ],
+      [
+        "Section 1.1",
+        "Shifted Factorial"
+      ]
+    ],
+    "count": 21,
+    "create_time": 1774690324,
+    "update_time": 1774690324,
+    "_id": "doc-99f8c5f04443c9bb2a27180a8dccb0af"
+  }
+}
