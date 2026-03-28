@@ -48,6 +48,8 @@ neo4jWorkDir/
 # Data & Storage
 inputs/
 rag_storage*/
+knowledge_bases/
+web/dist/
 examples/input/
 examples/output/
 output*/
@@ -57,6 +59,8 @@ output*/
 TODO.md
 ignore_this.txt
 *.ignore.*
+node_modules/
+web/.package-lock.json
 
 # Project-specific files
 dickens*/
