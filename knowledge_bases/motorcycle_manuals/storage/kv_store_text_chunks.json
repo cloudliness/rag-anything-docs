@@ -1,0 +1,34 @@
+{
+  "chunk-f38ffaceffd4739d0fd781d22525fa3c": {
+    "tokens": 62,
+    "content": "Sample Note \n\nThis is a simple non-Office document for validating the local RAG-Anything setup. \n\nKey Points \n\nShort Content \n\nRAG systems combine retrieval with generation. This sample file exists only to validate that text and markdown parsing work in the current environment without relying on API keys or Office formats.",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-f25047427af01390afd9d56df0655479",
+    "file_path": "sample_note.md",
+    "llm_cache_list": [
+      "default:extract:8de4107de1a19182ef0cff5ed3755427",
+      "default:extract:736e637399c0d2972cadcadc2a603886"
+    ],
+    "create_time": 1774674146,
+    "update_time": 1774674237,
+    "_id": "chunk-f38ffaceffd4739d0fd781d22525fa3c"
+  },
+  "chunk-411cf019ba107d055b1ff17bcfaad4fe": {
+    "content": "List Content Analysis:\nContent: {'type': 'list', 'sub_type': 'text', 'list_items': ['- The conda environment is named ragged. ', '- RAG-Anything is installed from source with all optional Python extras. ', '- MinerU is the default parser. ', '- LibreOffice is available through a local wrapper in the ragged environment. '], 'bbox': [126, 244, 623, 326], 'page_idx': 0}\n\nAnalysis: This content is structured as a single-column text list located at bounding box coordinates [126, 244, 623, 326] on the document's first page (page_idx: 0). The enumeration comprises four discrete text-based items defining the local development environment configuration for the RAG-Anything system. Key elements include the specific conda environment identifier ('ragged'), the source installation status of the main application, the default text parsing library ('MinerU'), and the availability of a LibreOffice local wrapper. This component acts as a system validation artifact within a non-Office document context, confirming that the text and markdown parsing pipeline can be executed without relying on commercial Office licenses or remote API keys. The content connects directly to the broader document's purpose of local setup verification, serving as a critical check for the integrity of the RAG-Anything local environment. For knowledge retrieval, this list provides essential metadata regarding software stack requirements, dependency resolution, and toolchain composition necessary for successful environment reproduction and RAG-Anything deployment workflows. The list structure efficiently organizes technical specifications into a machine-readable format, facilitating automated validation checks.",
+    "tokens": 326,
+    "full_doc_id": "doc-f25047427af01390afd9d56df0655479",
+    "chunk_order_index": 1,
+    "file_path": "sample_note.md",
+    "llm_cache_list": [
+      "default:extract:15dba99b8e33619f306c18fb1074da6d",
+      "default:extract:188ec778111fa7cd38d6a10666d2869c"
+    ],
+    "is_multimodal": true,
+    "modal_entity_name": "RAG-Anything Environment Specification List (list)",
+    "original_type": "list",
+    "page_idx": 0,
+    "create_time": 1774674260,
+    "update_time": 1774674394,
+    "_id": "chunk-411cf019ba107d055b1ff17bcfaad4fe"
+  }
+}

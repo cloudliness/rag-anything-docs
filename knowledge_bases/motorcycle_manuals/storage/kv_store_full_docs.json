@@ -1,0 +1,9 @@
+{
+  "doc-f25047427af01390afd9d56df0655479": {
+    "content": "Sample Note \n\nThis is a simple non-Office document for validating the local RAG-Anything setup. \n\nKey Points \n\nShort Content \n\nRAG systems combine retrieval with generation. This sample file exists only to validate that text and markdown parsing work in the current environment without relying on API keys or Office formats.",
+    "file_path": "sample_note.md",
+    "create_time": 1774674146,
+    "update_time": 1774674146,
+    "_id": "doc-f25047427af01390afd9d56df0655479"
+  }
+}

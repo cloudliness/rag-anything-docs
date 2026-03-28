@@ -1,0 +1,1268 @@
+{
+    "pdf_info": [
+        {
+            "para_blocks": [
+                {
+                    "bbox": [
+                        75,
+                        105,
+                        534,
+                        160
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "index": 2,
+                    "lines": [
+                        {
+                            "bbox": [
+                                76,
+                                105,
+                                536,
+                                118
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        76,
+                                        105,
+                                        536,
+                                        118
+                                    ],
+                                    "type": "text",
+                                    "content": "technique given by Campbell and Cantarini [5] and relying on a modified Abel lemma, we obtain a",
+                                    "score": 1.0
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                75,
+                                118,
+                                535,
+                                133
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        75,
+                                        118,
+                                        224,
+                                        133
+                                    ],
+                                    "type": "text",
+                                    "content": "simplified proof of Yamaguchi’s",
+                                    "score": 1.0
+                                },
+                                {
+                                    "bbox": [
+                                        225,
+                                        121,
+                                        231,
+                                        132
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "q",
+                                    "score": 0.79
+                                },
+                                {
+                                    "bbox": [
+                                        232,
+                                        118,
+                                        370,
+                                        133
+                                    ],
+                                    "type": "text",
+                                    "content": "-analogue, together with a new",
+                                    "score": 1.0
+                                },
+                                {
+                                    "bbox": [
+                                        370,
+                                        121,
+                                        378,
+                                        132
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "q",
+                                    "score": 0.78
+                                },
+                                {
+                                    "bbox": [
+                                        378,
+                                        118,
+                                        535,
+                                        133
+                                    ],
+                                    "type": "text",
+                                    "content": "-analogue of Gosper’s identity that",
+                                    "score": 1.0
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                75,
+                                132,
+                                535,
+                                146
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        75,
+                                        132,
+                                        215,
+                                        146
+                                    ],
+                                    "type": "text",
+                                    "content": "is inequivalent to Yamaguchi’s",
+                                    "score": 1.0
+                                },
+                                {
+                                    "bbox": [
+                                        216,
+                                        134,
+                                        223,
+                                        146
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "q",
+                                    "score": 0.79
+                                },
+                                {
+                                    "bbox": [
+                                        223,
+                                        132,
+                                        535,
+                                        146
+                                    ],
+                                    "type": "text",
+                                    "content": "-analogue. We also show how a similar approach can be applied much",
+                                    "score": 1.0
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                76,
+                                147,
+                                433,
+                                160
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        76,
+                                        147,
+                                        239,
+                                        160
+                                    ],
+                                    "type": "text",
+                                    "content": "more broadly in the construction of",
+                                    "score": 1.0
+                                },
+                                {
+                                    "bbox": [
+                                        239,
+                                        149,
+                                        247,
+                                        159
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "q",
+                                    "score": 0.8
+                                },
+                                {
+                                    "bbox": [
+                                        247,
+                                        147,
+                                        433,
+                                        160
+                                    ],
+                                    "type": "text",
+                                    "content": "-analogues, as in Sections 2.1–2.3 below.",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        75,
+                        170,
+                        535,
+                        198
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "index": 3,
+                    "lines": [
+                        {
+                            "bbox": [
+                                76,
+                                169,
+                                535,
+                                186
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        76,
+                                        169,
+                                        324,
+                                        186
+                                    ],
+                                    "type": "text",
+                                    "content": "1.1. Preliminaries. The shifted factorial is such that",
+                                    "score": 1.0
+                                },
+                                {
+                                    "bbox": [
+                                        324,
+                                        170,
+                                        363,
+                                        184
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "( x ) _ { 0 } = 1",
+                                    "score": 0.93
+                                },
+                                {
+                                    "bbox": [
+                                        364,
+                                        169,
+                                        384,
+                                        186
+                                    ],
+                                    "type": "text",
+                                    "content": "and",
+                                    "score": 1.0
+                                },
+                                {
+                                    "bbox": [
+                                        384,
+                                        170,
+                                        517,
+                                        184
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "( x ) _ { n } = x ( x + 1 ) \\cdots ( x + n - 1 )",
+                                    "score": 0.94
+                                },
+                                {
+                                    "bbox": [
+                                        517,
+                                        169,
+                                        535,
+                                        186
+                                    ],
+                                    "type": "text",
+                                    "content": "for",
+                                    "score": 1.0
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                76,
+                                184,
+                                453,
+                                198
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        76,
+                                        184,
+                                        453,
+                                        198
+                                    ],
+                                    "type": "text",
+                                    "content": "positive integers n. Generalized hypergeometric series may then be defined so that",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        189,
+                        202,
+                        419,
+                        235
+                    ],
+                    "type": "interline_equation",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                189,
+                                202,
+                                419,
+                                235
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        189,
+                                        202,
+                                        419,
+                                        235
+                                    ],
+                                    "type": "interline_equation",
+                                    "content": "{ } _ { r } F _ { s } \\left[ \\begin{array} { c } a _ { 1 } , a _ { 2 } , \\ldots , a _ { r } \\\\ b _ { 1 } , b _ { 2 } , \\ldots , b _ { s } \\end{array} ; x \\right] = \\sum _ { n = 0 } ^ { \\infty } \\frac { ( a _ { 1 } ) _ { n } ( a _ { 2 } ) _ { n } \\cdots ( a _ { r } ) _ { n } } { ( b _ { 1 } ) _ { n } ( b _ { 2 } ) _ { n } \\cdots ( b _ { s } ) _ { n } } \\frac { x ^ { n } } { n ! } ,",
+                                    "image_path": "61d7c4eb4807c265838e73211138631c634fa26264471f8619d6165f1498c7d8.jpg"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 4
+                },
+                {
+                    "bbox": [
+                        75,
+                        239,
+                        313,
+                        252
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "index": 5,
+                    "lines": [
+                        {
+                            "bbox": [
+                                76,
+                                238,
+                                313,
+                                255
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        76,
+                                        238,
+                                        313,
+                                        255
+                                    ],
+                                    "type": "text",
+                                    "content": "referring to Bailey’s classic text for background [3].",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        75,
+                        253,
+                        534,
+                        281
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "index": 6,
+                    "lines": [
+                        {
+                            "bbox": [
+                                88,
+                                253,
+                                535,
+                                268
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        88,
+                                        253,
+                                        108,
+                                        268
+                                    ],
+                                    "type": "text",
+                                    "content": "For",
+                                    "score": 1.0
+                                },
+                                {
+                                    "bbox": [
+                                        108,
+                                        253,
+                                        141,
+                                        267
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "| q | < 1",
+                                    "score": 0.91
+                                },
+                                {
+                                    "bbox": [
+                                        141,
+                                        253,
+                                        306,
+                                        268
+                                    ],
+                                    "type": "text",
+                                    "content": ", we recall the standard notation for",
+                                    "score": 1.0
+                                },
+                                {
+                                    "bbox": [
+                                        306,
+                                        256,
+                                        313,
+                                        266
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "q",
+                                    "score": 0.81
+                                },
+                                {
+                                    "bbox": [
+                                        313,
+                                        253,
+                                        506,
+                                        268
+                                    ],
+                                    "type": "text",
+                                    "content": "-shifted factorials. For a complex number",
+                                    "score": 1.0
+                                },
+                                {
+                                    "bbox": [
+                                        506,
+                                        256,
+                                        513,
+                                        265
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "a",
+                                    "score": 0.68
+                                },
+                                {
+                                    "bbox": [
+                                        514,
+                                        253,
+                                        535,
+                                        268
+                                    ],
+                                    "type": "text",
+                                    "content": ", the",
+                                    "score": 1.0
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                77,
+                                266,
+                                221,
+                                282
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        77,
+                                        270,
+                                        85,
+                                        281
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "q",
+                                    "score": 0.76
+                                },
+                                {
+                                    "bbox": [
+                                        85,
+                                        266,
+                                        221,
+                                        282
+                                    ],
+                                    "type": "text",
+                                    "content": "-shifted factorial is defined by",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        226,
+                        287,
+                        384,
+                        373
+                    ],
+                    "type": "interline_equation",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                226,
+                                287,
+                                384,
+                                373
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        226,
+                                        287,
+                                        384,
+                                        373
+                                    ],
+                                    "type": "interline_equation",
+                                    "content": "\\begin{array}{l} (a; q) _ {0} = 1, \\\\ (a; q) _ {n} = \\prod_ {k = 0} ^ {n - 1} \\left(1 - a q ^ {k}\\right), \\quad n \\geq 1, \\\\ (a; q) _ {\\infty} = \\prod_ {k = 0} ^ {\\infty} \\left(1 - a q ^ {k}\\right). \\\\ \\end{array}",
+                                    "image_path": "e4c699e628513d75a130ecc1ec0ddc8a1bf7f34d542df98b9c787a8efb364644.jpg"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 7
+                },
+                {
+                    "bbox": [
+                        75,
+                        380,
+                        534,
+                        411
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "index": 8,
+                    "lines": [
+                        {
+                            "bbox": [
+                                73,
+                                377,
+                                536,
+                                403
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        73,
+                                        377,
+                                        466,
+                                        403
+                                    ],
+                                    "type": "text",
+                                    "content": "We thus obtain a q-analogue of the shifted factorial in the sense that limq→1 (qa;q)n(1−q) n",
+                                    "score": 1.0
+                                },
+                                {
+                                    "bbox": [
+                                        159,
+                                        386,
+                                        167,
+                                        396
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "q",
+                                    "score": 0.79
+                                },
+                                {
+                                    "bbox": [
+                                        402,
+                                        379,
+                                        498,
+                                        400
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\begin{array} { r } { \\operatorname* { l i m } _ { q \\to 1 } \\frac { ( q ^ { a } ; q ) _ { n } } { ( 1 - q ) ^ { n } } = ( a ) _ { n } } \\end{array}",
+                                    "score": 0.94
+                                },
+                                {
+                                    "bbox": [
+                                        499,
+                                        382,
+                                        536,
+                                        399
+                                    ],
+                                    "type": "text",
+                                    "content": ". Basic",
+                                    "score": 1.0
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                76,
+                                398,
+                                386,
+                                411
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        76,
+                                        398,
+                                        233,
+                                        411
+                                    ],
+                                    "type": "text",
+                                    "content": "hypergeometric series of the form",
+                                    "score": 1.0
+                                },
+                                {
+                                    "bbox": [
+                                        233,
+                                        399,
+                                        258,
+                                        411
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "{ } _ { r } \\phi _ { r - 1 }",
+                                    "score": 0.91
+                                },
+                                {
+                                    "bbox": [
+                                        259,
+                                        398,
+                                        386,
+                                        411
+                                    ],
+                                    "type": "text",
+                                    "content": "may then be defined so that",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        140,
+                        416,
+                        470,
+                        448
+                    ],
+                    "type": "interline_equation",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                140,
+                                416,
+                                470,
+                                448
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        140,
+                                        416,
+                                        470,
+                                        448
+                                    ],
+                                    "type": "interline_equation",
+                                    "content": "{ } _ { r } \\phi _ { r - 1 } \\left[ \\begin{array} { c } a _ { 1 } , a _ { 2 } , \\ldots , a _ { r } \\\\ b _ { 1 } , b _ { 2 } , \\ldots , b _ { r - 1 } \\end{array} ; q , x \\right] = \\sum _ { n = 0 } ^ { \\infty } \\frac { ( a _ { 1 } ; q ) _ { n } ( a _ { 2 } ; q ) _ { n } \\cdots ( a _ { r } ; q ) _ { n } } { ( q ; q ) _ { n } ( b _ { 1 } ; q ) _ { n } ( b _ { 2 } ; q ) _ { n } \\cdots ( b _ { r - 1 } ; q ) _ { n } } x ^ { n } ,",
+                                    "image_path": "2e288bfddd95d507d08ceb8adb38f1430313fbdb00a94e50a7461c2678bfaf0e.jpg"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 9
+                },
+                {
+                    "bbox": [
+                        75,
+                        454,
+                        343,
+                        467
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "index": 10,
+                    "lines": [
+                        {
+                            "bbox": [
+                                77,
+                                453,
+                                343,
+                                468
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        77,
+                                        453,
+                                        188,
+                                        468
+                                    ],
+                                    "type": "text",
+                                    "content": "where it is assumed that",
+                                    "score": 1.0
+                                },
+                                {
+                                    "bbox": [
+                                        188,
+                                        454,
+                                        220,
+                                        468
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "| q | < 1",
+                                    "score": 0.92
+                                },
+                                {
+                                    "bbox": [
+                                        221,
+                                        453,
+                                        343,
+                                        468
+                                    ],
+                                    "type": "text",
+                                    "content": ". For brevity, we also write",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        196,
+                        472,
+                        414,
+                        505
+                    ],
+                    "type": "interline_equation",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                196,
+                                472,
+                                414,
+                                505
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        196,
+                                        472,
+                                        414,
+                                        505
+                                    ],
+                                    "type": "interline_equation",
+                                    "content": "\\left[ \\begin{array}{c} a _ {1}, a _ {2}, \\dots , a _ {r} \\\\ b _ {1}, b _ {2}, \\dots , b _ {s} \\end{array} ; q \\right] _ {n} = \\frac {(a _ {1} ; q) _ {n} (a _ {2} ; q) _ {n} \\cdots (a _ {r} ; q) _ {n}}{(b _ {1} ; q) _ {n} (b _ {2} ; q) _ {n} \\cdots (b _ {s} ; q) _ {n}}",
+                                    "image_path": "351f27bc356df9b53457318e811333323694b51f77d180f195c06b2e0a4fd9f2.jpg"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 11
+                },
+                {
+                    "bbox": [
+                        75,
+                        509,
+                        96,
+                        520
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "index": 12,
+                    "lines": [
+                        {
+                            "bbox": [
+                                75,
+                                510,
+                                96,
+                                521
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        75,
+                                        510,
+                                        96,
+                                        521
+                                    ],
+                                    "type": "text",
+                                    "content": "and",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        192,
+                        520,
+                        419,
+                        551
+                    ],
+                    "type": "interline_equation",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                192,
+                                520,
+                                419,
+                                551
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        192,
+                                        520,
+                                        419,
+                                        551
+                                    ],
+                                    "type": "interline_equation",
+                                    "content": "\\left[ \\begin{array}{c} a _ {1}, a _ {2}, \\ldots , a _ {r} \\\\ b _ {1}, b _ {2}, \\ldots , b _ {s} \\end{array} ; q \\right] _ {\\infty} = \\frac {(a _ {1} ; q) _ {\\infty} (a _ {2} ; q) _ {\\infty} \\cdots (a _ {r} ; q) _ {\\infty}}{(b _ {1} ; q) _ {\\infty} (b _ {2} ; q) _ {\\infty} \\cdots (b _ {s} ; q) _ {\\infty}}.",
+                                    "image_path": "50139624f1ee47d9153512d8af30ab37f6e71be76cd23e132f05029a6d26f204.jpg"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 13
+                },
+                {
+                    "bbox": [
+                        75,
+                        554,
+                        534,
+                        595
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "index": 14,
+                    "lines": [
+                        {
+                            "bbox": [
+                                88,
+                                553,
+                                536,
+                                568
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        88,
+                                        553,
+                                        161,
+                                        568
+                                    ],
+                                    "type": "text",
+                                    "content": "For a sequence",
+                                    "score": 1.0
+                                },
+                                {
+                                    "bbox": [
+                                        161,
+                                        554,
+                                        216,
+                                        567
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\left( \\tau _ { n } : n \\in \\mathbb { N } _ { 0 } \\right)",
+                                    "score": 0.9
+                                },
+                                {
+                                    "bbox": [
+                                        216,
+                                        553,
+                                        402,
+                                        568
+                                    ],
+                                    "type": "text",
+                                    "content": ", define the backward difference operator",
+                                    "score": 1.0
+                                },
+                                {
+                                    "bbox": [
+                                        402,
+                                        554,
+                                        412,
+                                        565
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\nabla",
+                                    "score": 0.62
+                                },
+                                {
+                                    "bbox": [
+                                        412,
+                                        553,
+                                        536,
+                                        568
+                                    ],
+                                    "type": "text",
+                                    "content": "and the forward difference",
+                                    "score": 1.0
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                76,
+                                567,
+                                534,
+                                582
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        76,
+                                        567,
+                                        118,
+                                        582
+                                    ],
+                                    "type": "text",
+                                    "content": "operator",
+                                    "score": 1.0
+                                },
+                                {
+                                    "bbox": [
+                                        118,
+                                        569,
+                                        127,
+                                        579
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\Delta",
+                                    "score": 0.67
+                                },
+                                {
+                                    "bbox": [
+                                        127,
+                                        567,
+                                        160,
+                                        582
+                                    ],
+                                    "type": "text",
+                                    "content": "so that",
+                                    "score": 1.0
+                                },
+                                {
+                                    "bbox": [
+                                        161,
+                                        568,
+                                        235,
+                                        581
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\nabla \\tau _ { n } = \\tau _ { n } - \\tau _ { n - 1 }",
+                                    "score": 0.92
+                                },
+                                {
+                                    "bbox": [
+                                        236,
+                                        567,
+                                        255,
+                                        582
+                                    ],
+                                    "type": "text",
+                                    "content": "and",
+                                    "score": 1.0
+                                },
+                                {
+                                    "bbox": [
+                                        256,
+                                        568,
+                                        329,
+                                        581
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\Delta \\tau _ { n } = \\tau _ { n } - \\tau _ { n + 1 }",
+                                    "score": 0.92
+                                },
+                                {
+                                    "bbox": [
+                                        329,
+                                        567,
+                                        534,
+                                        582
+                                    ],
+                                    "type": "text",
+                                    "content": ". Being consistent with a number of research",
+                                    "score": 1.0
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                76,
+                                582,
+                                490,
+                                595
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        76,
+                                        582,
+                                        490,
+                                        595
+                                    ],
+                                    "type": "text",
+                                    "content": "contributions from Chu et al. [8, 10, 11, 12] that have inspired our work, we let the relation",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        76,
+                        601,
+                        419,
+                        632
+                    ],
+                    "type": "interline_equation",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                76,
+                                601,
+                                419,
+                                632
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        76,
+                                        601,
+                                        419,
+                                        632
+                                    ],
+                                    "type": "interline_equation",
+                                    "content": "\\sum_ {n = 1} ^ {\\infty} B _ {n} \\nabla A _ {n} = \\left(\\lim  _ {m \\rightarrow \\infty} A _ {m} B _ {m + 1}\\right) - A _ {0} B _ {1} + \\sum_ {n = 1} ^ {\\infty} A _ {n} \\Delta B _ {n} \\tag {3}",
+                                    "image_path": "edb457ccc8f1362a67b3b4fd41f7fa26c3894664b3f48d0939292107844c2ba0.jpg"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 15
+                },
+                {
+                    "bbox": [
+                        75,
+                        636,
+                        535,
+                        693
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "index": 16,
+                    "lines": [
+                        {
+                            "bbox": [
+                                76,
+                                636,
+                                534,
+                                650
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        76,
+                                        636,
+                                        534,
+                                        650
+                                    ],
+                                    "type": "text",
+                                    "content": "be referred to as the modified Abel lemma on summation by parts, with the assumption that the above",
+                                    "score": 1.0
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                76,
+                                650,
+                                534,
+                                664
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        76,
+                                        650,
+                                        534,
+                                        664
+                                    ],
+                                    "type": "text",
+                                    "content": "limit exists and that the one of the two series in (3) converges. The summation lemma in (3) together",
+                                    "score": 1.0
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                77,
+                                665,
+                                534,
+                                678
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        77,
+                                        665,
+                                        107,
+                                        678
+                                    ],
+                                    "type": "text",
+                                    "content": "with a",
+                                    "score": 1.0
+                                },
+                                {
+                                    "bbox": [
+                                        107,
+                                        667,
+                                        115,
+                                        677
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "q",
+                                    "score": 0.76
+                                },
+                                {
+                                    "bbox": [
+                                        115,
+                                        665,
+                                        534,
+                                        678
+                                    ],
+                                    "type": "text",
+                                    "content": "-version of a technique (reviewed below) based on this lemma due to Campbell and Cantarini",
+                                    "score": 1.0
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                77,
+                                679,
+                                373,
+                                693
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        77,
+                                        679,
+                                        373,
+                                        693
+                                    ],
+                                    "type": "text",
+                                    "content": "[5] provide the keys to our main results given in Section 2 below.",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "discarded_blocks": [
+                {
+                    "bbox": [
+                        182,
+                        80,
+                        428,
+                        91
+                    ],
+                    "type": "header",
+                    "angle": 0,
+                    "index": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                182,
+                                80,
+                                429,
+                                92
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        182,
+                                        80,
+                                        234,
+                                        92
+                                    ],
+                                    "type": "text",
+                                    "content": "A FURTHER",
+                                    "score": 1.0
+                                },
+                                {
+                                    "bbox": [
+                                        235,
+                                        83,
+                                        240,
+                                        91
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "q",
+                                    "score": 0.78
+                                },
+                                {
+                                    "bbox": [
+                                        241,
+                                        80,
+                                        429,
+                                        92
+                                    ],
+                                    "type": "text",
+                                    "content": "-ANALOGUE OF GOSPER’S STRANGE SERIES",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        527,
+                        81,
+                        533,
+                        89
+                    ],
+                    "type": "page_number",
+                    "angle": 0,
+                    "index": 1,
+                    "lines": [
+                        {
+                            "bbox": [
+                                526,
+                                81,
+                                534,
+                                91
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        526,
+                                        81,
+                                        534,
+                                        91
+                                    ],
+                                    "type": "text",
+                                    "content": "2",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "page_size": [
+                612,
+                792
+            ],
+            "page_idx": 0
+        }
+    ],
+    "_backend": "hybrid",
+    "_ocr_enable": false,
+    "_vlm_ocr_enable": false,
+    "_version_name": "2.7.6"
+}

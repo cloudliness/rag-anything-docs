@@ -1,0 +1,359 @@
+{
+    "pdf_info": [
+        {
+            "para_blocks": [
+                {
+                    "bbox": [
+                        76,
+                        78,
+                        154,
+                        96
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "index": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                74,
+                                76,
+                                157,
+                                98
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        74,
+                                        76,
+                                        157,
+                                        98
+                                    ],
+                                    "type": "text",
+                                    "content": "Sample Note",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        75,
+                        118,
+                        399,
+                        134
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "index": 1,
+                    "lines": [
+                        {
+                            "bbox": [
+                                74,
+                                116,
+                                401,
+                                136
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        74,
+                                        116,
+                                        401,
+                                        136
+                                    ],
+                                    "type": "text",
+                                    "content": "This is a simple non-Office document for validating the local RAG-Anything setup.",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        76,
+                        166,
+                        137,
+                        184
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "index": 2,
+                    "lines": [
+                        {
+                            "bbox": [
+                                73,
+                                165,
+                                139,
+                                185
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        73,
+                                        165,
+                                        139,
+                                        185
+                                    ],
+                                    "type": "text",
+                                    "content": "Key Points",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        75,
+                        206,
+                        371,
+                        275
+                    ],
+                    "type": "list",
+                    "angle": 0,
+                    "index": 7,
+                    "blocks": [
+                        {
+                            "bbox": [
+                                75,
+                                206,
+                                245,
+                                221
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 3,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        76,
+                                        206,
+                                        246,
+                                        222
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                76,
+                                                206,
+                                                246,
+                                                222
+                                            ],
+                                            "type": "text",
+                                            "content": "- The conda environment is named ragged.",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                75,
+                                225,
+                                357,
+                                239
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 4,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        74,
+                                        222,
+                                        359,
+                                        242
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                74,
+                                                222,
+                                                359,
+                                                242
+                                            ],
+                                            "type": "text",
+                                            "content": "- RAG-Anything is installed from source with all optional Python extras.",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                76,
+                                243,
+                                194,
+                                257
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 5,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        76,
+                                        242,
+                                        195,
+                                        258
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                76,
+                                                242,
+                                                195,
+                                                258
+                                            ],
+                                            "type": "text",
+                                            "content": "- MinerU is the default parser.",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                75,
+                                260,
+                                371,
+                                275
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 6,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        76,
+                                        259,
+                                        372,
+                                        277
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                76,
+                                                259,
+                                                372,
+                                                277
+                                            ],
+                                            "type": "text",
+                                            "content": "- LibreOffice is available through a local wrapper in the ragged environment.",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "sub_type": "text"
+                },
+                {
+                    "bbox": [
+                        76,
+                        308,
+                        156,
+                        324
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "index": 8,
+                    "lines": [
+                        {
+                            "bbox": [
+                                76,
+                                307,
+                                158,
+                                326
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        76,
+                                        307,
+                                        158,
+                                        326
+                                    ],
+                                    "type": "text",
+                                    "content": "Short Content",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        74,
+                        349,
+                        506,
+                        375
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "index": 9,
+                    "lines": [
+                        {
+                            "bbox": [
+                                76,
+                                349,
+                                506,
+                                362
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        76,
+                                        349,
+                                        506,
+                                        362
+                                    ],
+                                    "type": "text",
+                                    "content": "RAG systems combine retrieval with generation. This sample file exists only to validate that text and markdown",
+                                    "score": 1.0
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                76,
+                                361,
+                                416,
+                                375
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        76,
+                                        361,
+                                        416,
+                                        375
+                                    ],
+                                    "type": "text",
+                                    "content": "parsing work in the current environment without relying on API keys or Office formats.",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "discarded_blocks": [],
+            "page_size": [
+                595,
+                841
+            ],
+            "page_idx": 0
+        }
+    ],
+    "_backend": "hybrid",
+    "_ocr_enable": false,
+    "_vlm_ocr_enable": false,
+    "_version_name": "2.7.6"
+}

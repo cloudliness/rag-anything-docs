@@ -1,0 +1,113 @@
+{
+  "doc-f25047427af01390afd9d56df0655479": {
+    "relation_pairs": [
+      [
+        "RAG-Anything Environment Specification List (list)",
+        "Remote API Keys"
+      ],
+      [
+        "RAG-Anything",
+        "Ragged Environment"
+      ],
+      [
+        "RAG-Anything Deployment Workflows",
+        "Software Stack Requirements"
+      ],
+      [
+        "Document",
+        "Page Index"
+      ],
+      [
+        "RAG-Anything",
+        "RAG-Anything Environment Specification List (list)"
+      ],
+      [
+        "Commercial Office Licenses",
+        "RAG-Anything Environment Specification List (list)"
+      ],
+      [
+        "LibreOffice",
+        "Ragged Environment"
+      ],
+      [
+        "Content",
+        "Page Index"
+      ],
+      [
+        "LibreOffice",
+        "RAG-Anything Environment Specification List (list)"
+      ],
+      [
+        "Commercial Office Licenses",
+        "Text and Markdown Parsing Pipeline"
+      ],
+      [
+        "Knowledge Retrieval",
+        "RAG-Anything"
+      ],
+      [
+        "Bounding Box Coordinates",
+        "Content"
+      ],
+      [
+        "Page Index",
+        "RAG-Anything Environment Specification List (list)"
+      ],
+      [
+        "Local Setup Verification",
+        "RAG-Anything Environment Specification List (list)"
+      ],
+      [
+        "RAG-Anything Environment Specification List (list)",
+        "Ragged Environment"
+      ],
+      [
+        "RAG-Anything Environment Specification List (list)",
+        "Text and Markdown Parsing Pipeline"
+      ],
+      [
+        "Document",
+        "RAG-Anything Environment Specification List (list)"
+      ],
+      [
+        "Knowledge Retrieval",
+        "RAG-Anything Environment Specification List (list)"
+      ],
+      [
+        "Content",
+        "RAG-Anything Environment Specification List (list)"
+      ],
+      [
+        "Bounding Box Coordinates",
+        "RAG-Anything Environment Specification List (list)"
+      ],
+      [
+        "MinerU",
+        "RAG-Anything Environment Specification List (list)"
+      ],
+      [
+        "MinerU",
+        "Text and Markdown Parsing Pipeline"
+      ],
+      [
+        "Content",
+        "Document"
+      ],
+      [
+        "RAG-Anything Environment Specification List (list)",
+        "Software Stack Requirements"
+      ],
+      [
+        "RAG-Anything Deployment Workflows",
+        "RAG-Anything Environment Specification List (list)"
+      ],
+      [
+        "Content",
+        "Local Setup Verification"
+      ]
+    ],
+    "count": 26,
+    "update_time": 1774674396,
+    "_id": "doc-f25047427af01390afd9d56df0655479"
+  }
+}

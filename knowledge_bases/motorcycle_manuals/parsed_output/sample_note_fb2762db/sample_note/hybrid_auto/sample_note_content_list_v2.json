@@ -1,0 +1,142 @@
+[
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "Sample Note "
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                127,
+                92,
+                258,
+                114
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "This is a simple non-Office document for validating the local RAG-Anything setup. "
+                    }
+                ]
+            },
+            "bbox": [
+                126,
+                140,
+                670,
+                159
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "Key Points "
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                127,
+                197,
+                230,
+                218
+            ]
+        },
+        {
+            "type": "list",
+            "content": {
+                "list_type": "text_list",
+                "list_items": [
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "- The conda environment is named ragged. "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "- RAG-Anything is installed from source with all optional Python extras. "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "- MinerU is the default parser. "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "- LibreOffice is available through a local wrapper in the ragged environment. "
+                            }
+                        ]
+                    }
+                ]
+            },
+            "bbox": [
+                126,
+                244,
+                623,
+                326
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "Short Content "
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                127,
+                366,
+                262,
+                385
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "RAG systems combine retrieval with generation. This sample file exists only to validate that text and markdown parsing work in the current environment without relying on API keys or Office formats. "
+                    }
+                ]
+            },
+            "bbox": [
+                124,
+                414,
+                850,
+                445
+            ]
+        }
+    ]
+]
